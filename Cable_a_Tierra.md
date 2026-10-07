@@ -7,17 +7,17 @@ Las personas a quines se les dirige este proyecto es a todas aquellas que quiere
 Hoy en dia nadie anota, los partidos de futbol suelen ser de 12 personas, 6 versus 6, suele haber un listado en el grupo de Whatsapp pero tiene solo el fin de saber quien va a jugar, no hay forma de conocer cuantos partidos participo cada uno, cuantos goles hizo etc. Suele haber un jugador que decide de que equipo es cada uno, cuando el partido es parejo (no termina con diferencia superior a dos goles) se le otorga la confianza a ese jugador de que arme el siguiente partido.
 
 ## Objetivos
-Que un jugador/a amateur logre sentirse con un incentivo extra al ver como a lo largo del tiempo suma más participaciones y acumula más estadística e incluso por qué no, ver como va mejorando.
+Que el 80% de los partidos de una organizacion de amigos queden cargados y que un jugador/a amateur logre sentirse con un incentivo extra al ver como a lo largo del tiempo suma más participaciones y acumula más estadística e incluso por qué no, ver como va mejorando.
 
 ## Requerimientos Funcionales
 - RF-01: El sistema debe solicitar registrarse a través de Google.
 - RF-02: El sistema debe permitir a cualquier jugador/a registrado crear una organizacion (ese jugador/a es administrador/a).
 - RF-03: El sistema debe almacenar los datos de las organizaciones dónde se concentre la información (dicha organización esta formada por un nombre, una descripcion, grupo de jugadores/as y partidos).
-- RF-04: El sistema debe permitir ingresar con modo invitado solo para ver información sobre organizaciones.
+- RF-04: El sistema debe permitir ingresar con modo invitado solo para ver información sobre organizaciones, solo puede visualizar los apodos de los jugadores y no la informacion detallada de ellos.
 - RF-05: El sistema debe almacenar los datos de los jugadores/ras (nombre, apodo, fecha de nacimiento, cantidad de goles; victorias; derrotas; empates;).
 - RF-06: La organizacion debe tener al menos un administrador/a para editar o crear jugadores/as, y asi tambien crear y edtiar partidos.
-- RF-07: El administrador de la organizacion debe crear o asociar jugadores/ras a una organización.
-- RF-08: El administrador de la organizacion debe crear un nuevo partido.
+- RF-07: El administrador de la organizacion debe crear o asociar jugadores/ras a una organización, luego las personas registradas con Google pueden asociarse a un/a jugador/a dentro del listado de la organización, solo un/a jugador/a por organizacion.
+- RF-08: El administrador de la organizacion debe crear un nuevo partido, primer se realiza una carga del dia que ocurre, el lugar y los jugadores por equipo, ahi se da de alta. Luego una vez finalizado el partido se cierra el mismo detallando los goles por jugador (en caso de gol encontra va gol para el equipo) y se da por concluido el partido.
 - RF-09: El sistema debe al finalizar un partido sumar los goles a cada jugador/a.
 - RF-10: El sistema debe al finalizar un partido sumar una victoria/empate/derrota a cada jugador/a.
 - RF-11: El sistema debe al finalizar un partido sumar un partido más a cada jugador/a.
@@ -25,34 +25,34 @@ Que un jugador/a amateur logre sentirse con un incentivo extra al ver como a lo 
 - RF-13: El sistema debe mostrar una lista de todos los jugadores/as que son parte de la organización.
 - RF-14: El sistema debe permitir mostrar un listado general ordenado por diferentes filtros como "más goleador/a", "más partidos jugador/a".
 - RF-15: El administrador de la organizacion debe poder editar la información de los jugadores/as de su nombre, apodo y fecha de nacimiento.
-- RF-16: El administrador de la organizacion debe poder editar un partido ya ocurrido.
-- RF-17: El sistema debe poder mostrar un listado de organizaciones.
+- RF-16: El sistema debe poder mostrar un listado de organizaciones.
+- RF-17: No debe poder elminar una organización.
+- RF-18: Ningún jugador/a va a ser registrado con contraseña.
+- RF-19: Nombres de los jugadores/as no deben superar los 40 caracteres.
+- RF-20: Cuando un partido tenga un jugador no asociado a la organización se debe mostrar al mismo como invitado y no debe sumar participaciones ni goles.
 
 ## Requerimientos No Funcionales
-- RNF-01: No debe poder elminar una organización.
-- RNF-02: Alguien no administrador no debe poder editar organizaciones.
-- RNF-03: Alguien no administrador no debe poder editar jugadores/as.
-- RNF-04: Alguien no administrador no debe poder editar partidos.
-- RNF-05: Ningún jugador/a va a ser registrado con contraseña.
-- RNF-06: Limite de jugadores/as por organizacion 40.
-- RNF-07: Tiempo maximo de carga de un partido no debe superar los 10 segundos.
-- RNF-08: Tiempo maximo de edicion de un jugador/a no debe superar los 10 segundos.
-- RNF-09: Tiempo maximo de creacion de un jugador/a no debe superar los 10 segundos.
-- RNF-10: Tiempo maximo de carga de listado de organizaciones no debe superar los 10 segundos.
-- RNF-11: Tiempo maximo de carga de listado de los ultimos 10 partidos dentro de una organizacion no debe superar los 10 segundos.
-- RNF-12: Tiempo maximo de carga de listado de los jugadores/as de una organizacion no debe superar los 10 segundos.
-- RNF-13: Nombres de los jugadores/as no deben superar los 40 caracteres.
-- RNF-14: Apodos de los jugadores/as no deben superar los 40 caracteres.
-- RNF-15: Fecha de nacimiento de los jugadores/as no deben ser anteriores al año 1920.
-- RNF-16: Cuando un partido tenga un jugador no asociado a la organización se debe mostrar al mismo como invitado y no debe sumar participaciones ni goles.
+- RNF-01: Alguien no administrador no debe poder editar organizaciones.
+- RNF-02: Alguien no administrador no debe poder editar jugadores/as.
+- RNF-03: Alguien no administrador no debe poder editar partidos.
+- RNF-04: Limite de jugadores/as por organizacion 40.
+- RNF-05: Tiempo maximo de carga de un partido no debe superar los 2 segundos.
+- RNF-06: Tiempo maximo de edicion de un jugador/a no debe superar los 2 segundos.
+- RNF-07: Tiempo maximo de creacion de un jugador/a no debe superar los 2 segundos.
+- RNF-08: Tiempo maximo de carga de listado de organizaciones no debe superar los 2 segundos.
+- RNF-09: Tiempo maximo de carga de listado de los ultimos 10 partidos dentro de una organizacion no debe superar los 2 segundos.
+- RNF-10: Tiempo maximo de carga de listado de los jugadores/as de una organizacion no debe superar los 2 segundos.
+- RNF-11: Apodos de los jugadores/as no deben superar los 40 caracteres.
+- RNF-12: Fecha de nacimiento de los jugadores/as no deben ser anteriores al año 1920.
 
 ## Criterios de Aceptación
 - AC-01 (RF-11): Dado un partido que contiene a un jugador/a, cuando el partido se toma como finalizado, entonces el jugador/a debe incrementar uno en cantidad de partidos.
-- AC-03 (RF-09): Dado un partido que contiene a un jugador/a con goles, cuando el partido se toma como finalizado, entonces el jugador/a debe incrementar la cantidad de goles que haya convertido.
-- AC-04 (RF-10): Dado un partido que contiene a un jugador/a con una victoria/derrota/empate, cuando el partido se toma como finalizado, entonces el jugador/a debe incrementar uno en cantidad de victorias/derrotas/empates.
-- AC-05 (RF-09, RF-10,RF-11): Dado un partido finalizado que contiene a un jugador/a con un error y es señalado como invitado, cuando el partido es editado, entonces efecto del partido original debe ser revertido y se debe volver a cargar como un nuevo ingreso de partido.
-- AC-06 (RF-02): Dado un jugador/a, cuando es creado, entonces el jugador/a debe contener los valores ingresados.
-- AC-07 (RF-06): Dado un jugador/a, cuando no es administrador/a, entonces no debe poder editar otros jugadores/as o partidos.
+- AC-02 (RF-09): Dado un partido que contiene a un jugador/a con goles, cuando el partido se toma como finalizado, entonces el jugador/a debe incrementar la cantidad de goles que haya convertido.
+- AC-03 (RF-10): Dado un partido que contiene a un jugador/a con una victoria/derrota/empate, cuando el partido se toma como finalizado, entonces el jugador/a debe incrementar uno en cantidad de victorias/derrotas/empates.
+- AC-04 (RF-07): Dado un jugador/a, cuando es creado, entonces el jugador/a debe contener los valores ingresados.
+- AC-05 (RF-06): Dado un jugador/a, cuando no es administrador/a, entonces no debe poder editar otros jugadores/as o partidos.
+- AC-06 (RF-04): Dado un jugador/a, cuando no es administrador/a, entonces no debe poder visualizar informacion como nombre completo ni fecha de nacimiento de los jugadores de una organizaciones.
+- AC-07 (RF-14): Dado un jugador/a, cuando tiene cierta cantidad de goles, entonces debe poder ser visualizado en el listado de jugadores ordenados por "más goleador/a".
 
 ## Fuera de Alcance
 - Interpretar un mensaje de WhatsApp (V 2.0)
