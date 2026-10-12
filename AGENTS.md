@@ -7,7 +7,7 @@ MVP solo fútbol, con login de Google y organizaciones administradas. Requisitos
 ## Stack
 - Next.js 15 (App Router) + TypeScript, Node 22 LTS, npm
 - Firebase: Firestore (base de datos) + Firebase Auth (solo Google)
-- Firebase Emulator Suite para desarrollo local y tests
+- Firebase Emulator Suite para desarrollo local y tests (requiere Java JDK 21+)
 - Tests: Vitest (unitarios) + Playwright (end-to-end)
 - Hosting: Vercel
 

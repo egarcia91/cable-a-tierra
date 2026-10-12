@@ -1,0 +1,27 @@
+# dependencias
+node_modules/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# entorno (el .env.example sí se commitea)
+.env*.local
+.env
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-debug.log
+
+# tests
+coverage/
+playwright-report/
+test-results/
+
+# Vercel
+.vercel/
