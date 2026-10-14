@@ -24,6 +24,6 @@ npm run test:e2e               # Playwright
 ## Qué NO hacer
 - No implementar el borrado de organizaciones (RF-17).
 - No agregar login con contraseña: solo Google (RF-18).
-- No mostrar nombre completo ni fecha de nacimiento a invitados ni a quienes no son admin. Los permisos se validan en Firestore Security Rules o en el servidor, nunca solo en la UI (RF-04, RNF-01 a 03).
-- No sumar estadísticas a jugadores invitados, es decir, los que no pertenecen a la organización (RF-20).
+- No mostrar nombre completo ni fecha de nacimiento de los jugadores/as de una organización a quienes no son miembros de ella (invitados o registrados de otras organizaciones). Los miembros (admins y usuarios asociados a un jugador/a de esa organización) sí los ven. Los permisos se validan en Firestore Security Rules o en el servidor, nunca solo en la UI (RF-04, RF-06c, RF-06d, RNF-01).
+- No sumar estadísticas a jugadores/as externos, es decir, los que no pertenecen a la organización (RF-20).
 - No construir funcionalidades de V2 ni fuera de alcance: Elo, votación, WhatsApp, ficha para redes, invitaciones por link, otros deportes.
