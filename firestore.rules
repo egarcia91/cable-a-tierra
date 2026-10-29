@@ -1,0 +1,42 @@
+rules_version = '2';
+
+// Todas las escrituras pasan por el servidor (Server Actions + Admin SDK, que ignora estas
+// reglas). Desde el cliente solo se lee, y nunca los datos personales de quien no es miembro.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOrgAdmin(orgId) {
+      return request.auth != null
+        && get(/databases/$(database)/documents/organizations/$(orgId)).data.adminUid == request.auth.uid;
+    }
+
+    match /organizations/{orgId} {
+      allow read: if true;
+      allow write: if false; // RF-04b, RF-06a, RF-06f, RF-17
+
+      // Apodo y estadísticas: públicos (RF-04d).
+      match /players/{playerId} {
+        allow read: if true;
+        allow write: if false; // RF-06c
+
+        // Nombre completo y fecha de nacimiento: solo miembros (RF-04c, RF-04d).
+        // En esta etapa el único miembro es el admin; la asociación de cuentas (RF-07b)
+        // va a sumar a los usuarios asociados.
+        match /private/{docId} {
+          allow read: if isOrgAdmin(orgId);
+          allow write: if false;
+        }
+      }
+
+      match /matches/{matchId} {
+        allow read: if true;
+        allow write: if false; // RF-06d, RF-06g
+      }
+    }
+
+    // Cualquier otra colección (por ejemplo users, que tiene emails) queda cerrada.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
