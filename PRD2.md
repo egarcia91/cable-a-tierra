@@ -1,0 +1,250 @@
+# PRD-001: Cable a Tierra — anotador de partidos de amigos (MVP solo fútbol)
+
+## Contexto y Problema
+Hoy en día hay muchos partidos amateur entre amigos y amigas, todos los días, en todos lados, cada Argentino y Argentina trata de lograr hacer su descarga a tierra ejercitando su pasión por algún deporte.
+El dolor que hay es en la era de la tecnología que vivimos no tener nada anotado, no poder mostrar en redes sociales sus propios goles, sus puntos, sus victorias, sus trofeos, sus estadísticas.
+Las personas a quienes se les dirige este proyecto es a todas aquellas que quieren contabilizar su pasión de otra manera y reconocer su esfuerzo, a todos los jugadores y jugadoras del deporte amateur que practiquen.
+Hoy en día nadie anota, los partidos de fútbol suelen ser de 12 personas, 6 versus 6, suele haber un listado en el grupo de Whatsapp pero tiene solo el fin de saber quién va a jugar, no hay forma de conocer cuántos partidos participó cada uno, cuántos goles hizo etc. Suele haber un jugador que decide de qué equipo es cada uno, cuando el partido es parejo (no termina con diferencia superior a dos goles) se le otorga la confianza a ese jugador de que arme el siguiente partido.
+
+### Personas
+- **Administrador/a**: usuario registrado que crea una organización. Necesita cargar jugadores/as, dar de alta partidos, finalizarlos y corregirlos para que se acumulen las estadísticas.
+- **Jugador/a asociado/a**: usuario registrado cuya cuenta está asociada a un jugador/a de una organización. Necesita ver sus estadísticas y los datos de su organización.
+- **Usuario registrado no miembro**: usuario registrado que no es miembro de una organización. Necesita mirar organizaciones, partidos y estadísticas, sin acceder a datos personales de esa organización.
+- **Invitado/a**: entra sin iniciar sesión. Necesita mirar organizaciones, partidos y estadísticas, sin acceder a datos personales.
+
+## Objetivos
+- Objetivo medible: en cada mes calendario, al menos el 80% del total de partidos dados de alta en ese mes (sumando todas las organizaciones) debe estar finalizado 7 días después del cierre de ese mes.
+- Aspiración (visión del producto, no es una métrica): que un jugador/a amateur logre sentirse con un incentivo extra al ver cómo a lo largo del tiempo suma más participaciones y acumula más estadística e incluso por qué no, ver cómo va mejorando.
+
+## Requerimientos Funcionales
+- RF-01a: El sistema debe permitir a un usuario iniciar sesión con su cuenta de Google.
+- RF-01b: El sistema debe registrar al usuario la primera vez que inicia sesión con su cuenta de Google.
+- RF-02a: El sistema debe permitir a cualquier usuario registrado crear una organización.
+- RF-02b: El sistema debe asignar como administrador/a de una organización al usuario que la crea.
+- RF-03: El sistema debe almacenar los datos de las organizaciones donde se concentre la información (dicha organización está formada por un nombre, una descripción opcional, grupo de jugadores/as y partidos).
+- RF-04a: El sistema debe permitir ingresar en modo invitado, sin iniciar sesión.
+- RF-04b: El sistema debe impedir que un usuario en modo invitado cree o edite cualquier información.
+- RF-04c: El sistema debe mostrar el nombre completo y la fecha de nacimiento de los jugadores/as de una organización a sus miembros (sus administradores/as y los usuarios asociados a un jugador/a de ella).
+- RF-04d: El sistema debe mostrar solo el apodo y las estadísticas (partidos, goles, victorias, empates y derrotas) de los jugadores/as de una organización a quienes no son miembros de ella (usuarios en modo invitado o usuarios registrados que no son miembros), sin mostrarles nunca su nombre completo ni su fecha de nacimiento.
+- RF-05: El sistema debe almacenar de cada jugador/a: nombre, apodo, fecha de nacimiento (opcional) y cantidad de partidos, goles, victorias, empates y derrotas.
+- RF-06a: El sistema debe exigir que cada organización tenga al menos un administrador/a.
+- RF-06b: El sistema debe permitir al administrador/a de una organización editar el día, el lugar y los jugadores/as de cada equipo de los partidos pendientes de esa organización.
+- RF-06c: El sistema debe impedir que un usuario que no es administrador/a de una organización cree o edite jugadores/as de esa organización.
+- RF-06d: El sistema debe impedir que un usuario que no es administrador/a de una organización cree, edite o corrija partidos de esa organización.
+- RF-06e: El sistema debe permitir al administrador/a de una organización editar el nombre y la descripción de esa organización.
+- RF-06f: El sistema debe impedir que un usuario que no es administrador/a de una organización la edite.
+- RF-06g: El sistema debe permitir al administrador/a de una organización corregir los goles de cada jugador/a (incluidos los goles en contra) de un partido finalizado de esa organización, sin límite de tiempo.
+- RF-06h: El sistema debe permitir al administrador/a de una organización corregir los jugadores/as de cada equipo de un partido finalizado de esa organización, sin límite de tiempo.
+- RF-06i: El sistema debe permitir al administrador/a de una organización corregir el día y el lugar de un partido finalizado de esa organización, sin límite de tiempo.
+- RF-06j: El sistema debe, al corregir un partido finalizado, recalcular los partidos, goles, victorias, empates y derrotas de los jugadores/as afectados para que reflejen el partido corregido.
+- RF-06k: El sistema debe aplicar a la corrección de un partido finalizado las mismas validaciones que al darlo de alta y al finalizarlo (RF-08d, RF-08f, RF-08g, RF-08h, RF-19b, RF-19e, RF-19j y RF-19k).
+- RF-07a: El sistema debe permitir al administrador/a de una organización crear jugadores/as en esa organización.
+- RF-07b: El sistema debe permitir al administrador/a de una organización asociar una cuenta registrada a un jugador/a de esa organización, indicando el email de Google de esa cuenta.
+- RF-07c: El sistema debe impedir que una cuenta esté asociada a más de un jugador/a de la misma organización.
+- RF-07d: El sistema debe impedir que un jugador/a esté asociado a más de una cuenta.
+- RF-07e: El sistema debe rechazar la creación de un jugador/a en una organización que ya tiene 40 jugadores/as.
+- RF-07f: El sistema debe rechazar la asociación cuando el email indicado no corresponde a ninguna cuenta registrada.
+- RF-08a: El sistema debe permitir al administrador/a de una organización dar de alta un partido de esa organización con día, lugar y los jugadores/as de cada equipo, elegidos del listado de jugadores/as de la organización.
+- RF-08b: El sistema debe permitir al administrador/a de una organización finalizar un partido de esa organización cargando los goles de cada jugador/a.
+- RF-08c: El sistema debe sumar cada gol en contra al marcador del equipo rival sin acreditarlo a ningún jugador/a.
+- RF-08d: El sistema debe exigir que cada equipo de un partido tenga al menos 1 jugador/a.
+- RF-08e: El sistema debe permitir al administrador/a, al dar de alta, editar o corregir un partido, agregar a un equipo un jugador/a externo/a indicando solo su apodo.
+- RF-08f: El sistema debe rechazar un partido en el que un mismo jugador/a esté en los dos equipos.
+- RF-08g: El sistema debe rechazar cantidades de goles que no sean números enteros mayores o iguales a 0.
+- RF-08h: El sistema debe rechazar la finalización de un partido cuyo día es posterior al día actual en hora de Argentina (America/Argentina/Buenos_Aires).
+- RF-09: El sistema debe al finalizar un partido sumar los goles a cada jugador/a.
+- RF-10: El sistema debe, al finalizar un partido, sumar a cada jugador/a una victoria si su equipo hizo más goles que el rival, un empate si hicieron los mismos, o una derrota si hizo menos.
+- RF-11: El sistema debe al finalizar un partido sumar un partido más a cada jugador/a.
+- RF-12a: El sistema debe mostrar a cualquier usuario, incluido el que está en modo invitado, la lista de partidos de una organización, ordenada por día del partido del más reciente al más antiguo, indicando si cada uno está finalizado o pendiente.
+- RF-12b: El sistema debe mostrar la lista de partidos de una organización de a 10, con la opción de ver los 10 siguientes.
+- RF-12c: El sistema debe desempatar a los partidos del mismo día por su momento de alta, del más reciente al más antiguo.
+- RF-13: El sistema debe mostrar a cualquier usuario, incluido el que está en modo invitado, una lista de todos los jugadores/as que son parte de la organización.
+- RF-14a: El sistema debe permitir ordenar el listado de jugadores/as de una organización por cantidad de partidos, goles, victorias, empates o derrotas, de mayor a menor.
+- RF-14b: El sistema debe mostrar por defecto el listado de jugadores/as de una organización ordenado por cantidad de partidos, de mayor a menor.
+- RF-14c: El sistema debe desempatar alfabéticamente por apodo a los jugadores/as con el mismo valor en el criterio de orden del listado.
+- RF-15: El sistema debe permitir al administrador/a de una organización editar el nombre, el apodo y la fecha de nacimiento de los jugadores/as de esa organización.
+- RF-16a: El sistema debe mostrar a cualquier usuario, incluido el que está en modo invitado, el listado de todas las organizaciones, ordenado por cantidad de partidos finalizados de mayor a menor (a igual cantidad, alfabéticamente por nombre).
+- RF-16b: El sistema debe mostrar el listado de organizaciones de a 10, con la opción de ver las 10 siguientes.
+- RF-17: El sistema debe impedir que cualquier usuario elimine una organización.
+- RF-18: El sistema debe impedir el inicio de sesión con cualquier método distinto de Google (por ejemplo, usuario y contraseña).
+- RF-19a: El sistema debe rechazar nombres de jugadores/as de más de 40 caracteres.
+- RF-19b: El sistema debe rechazar apodos de jugadores/as, incluidos los externos/as, de más de 40 caracteres.
+- RF-19c: El sistema debe rechazar fechas de nacimiento de jugadores/as anteriores al 1 de enero de 1920.
+- RF-19d: El sistema debe rechazar jugadores/as sin nombre.
+- RF-19e: El sistema debe rechazar jugadores/as, incluidos los externos/as, sin apodo.
+- RF-19f: El sistema debe rechazar fechas de nacimiento de jugadores/as posteriores al día actual en hora de Argentina (America/Argentina/Buenos_Aires).
+- RF-19g: El sistema debe rechazar organizaciones sin nombre.
+- RF-19h: El sistema debe rechazar nombres de organizaciones de más de 40 caracteres.
+- RF-19i: El sistema debe rechazar descripciones de organizaciones de más de 200 caracteres.
+- RF-19j: El sistema debe rechazar partidos sin lugar.
+- RF-19k: El sistema debe rechazar lugares de partidos de más de 40 caracteres.
+- RF-19l: El sistema debe considerar vacío, a los efectos de RF-19d, RF-19e, RF-19g y RF-19j, un texto compuesto solo por espacios.
+- RF-20a: El sistema debe mostrar como "externo/a" a todo jugador/a de un partido que no pertenezca a la organización del partido.
+- RF-20b: El sistema debe excluir a los jugadores/as externos del cómputo de partidos, goles, victorias, empates y derrotas.
+- RF-20c: El sistema debe sumar los goles de los jugadores/as externos al marcador de su equipo.
+- RF-21: El sistema debe permitir que una misma cuenta esté asociada a jugadores/as de distintas organizaciones, cada uno con sus propios datos en su organización (por ejemplo, "Pepe" en la organización A y "José" en la organización B).
+- RF-22: El sistema debe impedir que cualquier usuario, incluido el administrador/a, modifique la cantidad de partidos, goles, victorias, empates o derrotas de un jugador/a, salvo como resultado de finalizar un partido (RF-09 a RF-11) o de corregirlo (RF-06j).
+- RF-23: El sistema debe rechazar la finalización de un partido que ya está finalizado.
+
+## Requerimientos No Funcionales
+- RNF-01: El sistema debe validar todos los permisos en Firestore Security Rules o en el servidor; el 100% de las operaciones no permitidas deben rechazarse aunque se envíen directamente a la base de datos sin pasar por la UI.
+
+Condiciones de medición para RNF-02 a RNF-07: percentil 95 (p95), medido desde que el usuario ejecuta la acción hasta que el resultado se ve en pantalla, en el entorno de producción, en Chrome DevTools con emulación de dispositivo móvil, el perfil de red "Fast 4G" y CPU throttling "4x slowdown".
+
+- RNF-02a: El tiempo de alta de un partido debe ser menor a 2 s (p95).
+- RNF-02b: El tiempo de finalización de un partido debe ser menor a 2 s (p95).
+- RNF-02c: El tiempo de corrección de un partido finalizado debe ser menor a 2 s (p95).
+- RNF-03: El tiempo de edición de un jugador/a debe ser menor a 2 s (p95).
+- RNF-04: El tiempo de creación de un jugador/a debe ser menor a 2 s (p95).
+- RNF-05: El tiempo hasta que se ven las primeras 10 organizaciones del listado de organizaciones debe ser menor a 2 s (p95).
+- RNF-06: El tiempo hasta que se ven los 10 partidos más recientes del listado de partidos de una organización debe ser menor a 2 s (p95).
+- RNF-07: El tiempo hasta que se ven todos los jugadores/as (hasta 40) del listado de jugadores/as de una organización debe ser menor a 2 s (p95).
+
+## Criterios de Aceptación
+- AC-01 (RF-11): Dado un jugador/a con 7 partidos que está en un partido pendiente, cuando el administrador/a finaliza el partido, entonces el jugador/a debe quedar con 8 partidos.
+- AC-02 (RF-09): Dado un jugador/a con 4 goles que convierte 2 goles en un partido, cuando el administrador/a finaliza el partido, entonces el jugador/a debe quedar con 6 goles.
+- AC-03a (RF-10): Dado un jugador/a con 0 victorias, 0 empates y 0 derrotas cuyo equipo gana 5 a 3, cuando el administrador/a finaliza el partido, entonces debe quedar con 1 victoria, 0 empates y 0 derrotas.
+- AC-03b (RF-10): Dado un jugador/a con 0 victorias, 0 empates y 0 derrotas cuyo equipo empata 3 a 3, cuando el administrador/a finaliza el partido, entonces debe quedar con 0 victorias, 1 empate y 0 derrotas.
+- AC-03c (RF-10): Dado un jugador/a con 0 victorias, 0 empates y 0 derrotas cuyo equipo pierde 3 a 5, cuando el administrador/a finaliza el partido, entonces debe quedar con 0 victorias, 0 empates y 1 derrota.
+- AC-04 (RF-05): Dado un administrador/a, cuando crea un jugador/a con nombre "Juan Pérez", apodo "Juancho" y fecha de nacimiento 10 de mayo de 1990, entonces el jugador/a debe quedar guardado con esos tres valores y con 0 partidos, 0 goles, 0 victorias, 0 empates y 0 derrotas.
+- AC-05a (RF-06c, RNF-01): Dado un usuario registrado que no es administrador/a de una organización, cuando intenta crear un jugador/a de esa organización enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-05b (RF-06c, RNF-01): Dado un usuario registrado que no es administrador/a de una organización, cuando intenta editar un jugador/a de esa organización enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-05c (RF-06d, RNF-01): Dado un usuario registrado que no es administrador/a de una organización, cuando intenta crear un partido de esa organización enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-05d (RF-06d, RNF-01): Dado un usuario registrado que no es administrador/a de una organización, cuando intenta editar un partido pendiente de esa organización enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-05e (RF-06d, RNF-01): Dado un usuario registrado que no es administrador/a de una organización, cuando intenta corregir un partido finalizado de esa organización enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-06 (RF-04d, RNF-01): Dado un usuario en modo invitado, cuando lee los jugadores/as de una organización, incluso directamente desde la base de datos, entonces debe recibir su apodo y sus partidos, goles, victorias, empates y derrotas, y nunca su nombre completo ni su fecha de nacimiento.
+- AC-07 (RF-14a): Dados dos jugadores/as de una organización con 5 y 3 goles, cuando se ordena el listado de jugadores/as de esa organización por cantidad de goles, entonces el jugador/a con 5 goles debe aparecer primero.
+- AC-08a (RF-04c): Dado el administrador/a de una organización, cuando ve los jugadores/as de esa organización, entonces debe ver su nombre completo y su fecha de nacimiento.
+- AC-08b (RF-04c): Dado un usuario asociado a un jugador/a de una organización que no es su administrador/a, cuando ve los jugadores/as de esa organización, entonces debe ver su nombre completo y su fecha de nacimiento.
+- AC-09a (RF-01a): Dado un usuario ya registrado, cuando inicia sesión con su cuenta de Google, entonces debe quedar con la sesión iniciada.
+- AC-09b (RF-01b): Dado un usuario sin cuenta, cuando inicia sesión con su cuenta de Google por primera vez, entonces debe quedar registrado y con la sesión iniciada.
+- AC-10a (RF-02a): Dado un usuario registrado, cuando crea una organización, entonces la organización debe quedar creada.
+- AC-10b (RF-02b): Dado un usuario registrado, cuando crea una organización, entonces ese usuario debe quedar como su administrador/a.
+- AC-11 (RF-03): Dada una organización con nombre "Los Martes", descripción "Fútbol los martes en Palermo", 2 jugadores/as y 1 partido, cuando se la consulta, entonces debe mostrar ese nombre, esa descripción, esos 2 jugadores/as y ese partido.
+- AC-12 (RF-07c): Dada una cuenta ya asociada a un jugador/a de una organización, cuando el administrador/a intenta asociarla a otro jugador/a de la misma organización, entonces el sistema debe rechazarlo.
+- AC-13 (RF-07d): Dado un jugador/a ya asociado a una cuenta, cuando el administrador/a intenta asociarle otra cuenta, entonces el sistema debe rechazarlo.
+- AC-14 (RF-08a): Dado un administrador/a, cuando da de alta un partido con día, lugar y jugadores/as por equipo, entonces el partido debe quedar creado como pendiente.
+- AC-15 (RF-08c): Dado un partido pendiente, cuando el administrador/a lo finaliza cargando 2 goles para un jugador/a del equipo A y 1 gol en contra hecho por un jugador/a del equipo A, entonces el marcador debe quedar 2 a 1 a favor del equipo A y el gol en contra no debe acreditarse a ningún jugador/a.
+- AC-16a (RF-12a): Dados un partido finalizado del 10 de marzo y un partido pendiente del 17 de marzo de una organización, cuando se consulta la lista de partidos de esa organización, entonces el del 17 de marzo debe aparecer primero indicado como pendiente y el del 10 de marzo segundo indicado como finalizado.
+- AC-16b (RF-12a): Dada una organización con 3 partidos, cuando un usuario en modo invitado consulta su lista de partidos, entonces debe ver los 3 partidos.
+- AC-17a (RF-13): Dado un jugador/a que forma parte de una organización, cuando se consulta el listado de jugadores/as de esa organización, entonces debe aparecer en él.
+- AC-17b (RF-13): Dada una organización con 3 jugadores/as, cuando un usuario en modo invitado consulta su listado de jugadores/as, entonces debe ver los 3 jugadores/as.
+- AC-18a (RF-15): Dado un jugador/a con nombre "Juan Pérez", cuando el administrador/a cambia su nombre a "Juan Gómez", entonces debe guardarse "Juan Gómez".
+- AC-18b (RF-15): Dado un jugador/a con apodo "Juancho", cuando el administrador/a cambia su apodo a "Juanchi", entonces debe guardarse "Juanchi".
+- AC-18c (RF-15): Dado un jugador/a con fecha de nacimiento 10 de mayo de 1990, cuando el administrador/a la cambia a 11 de mayo de 1990, entonces debe guardarse 11 de mayo de 1990.
+- AC-19 (RF-16a): Dadas 3 organizaciones, cuando un usuario en modo invitado consulta el listado de organizaciones, entonces debe ver las 3.
+- AC-20a (RF-17): Dado un administrador/a, cuando ve su organización, entonces no debe existir la opción de eliminarla.
+- AC-20b (RF-17, RNF-01): Dado un administrador/a, cuando intenta eliminar su organización enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-21 (RF-18): Dado un usuario en la pantalla de ingreso, cuando ve las opciones para ingresar, entonces las únicas opciones deben ser iniciar sesión con Google o ingresar en modo invitado.
+- AC-22a (RF-19a): Dado un administrador/a, cuando carga un nombre de jugador/a de 40 caracteres, entonces el sistema debe aceptarlo.
+- AC-22b (RF-19a): Dado un administrador/a, cuando carga un nombre de jugador/a de 41 caracteres, entonces el sistema debe rechazarlo.
+- AC-23a (RF-20a): Dado un partido con un jugador/a externo/a, cuando se ven los equipos del partido, entonces ese jugador/a debe aparecer como "externo/a".
+- AC-23b (RF-20b): Dado un partido con un jugador/a externo/a que convierte 2 goles, cuando el administrador/a finaliza el partido, entonces el jugador/a externo/a no debe registrar partidos, goles, victorias, empates ni derrotas.
+- AC-23c (RF-20c): Dado un partido con un jugador/a externo/a del equipo A que convierte 2 goles y ningún otro gol, cuando el administrador/a finaliza el partido, entonces el marcador debe quedar 2 a 0 a favor del equipo A.
+- AC-24 (RF-04d, RNF-01): Dado un usuario registrado que no es miembro de una organización, cuando lee los jugadores/as de esa organización, incluso directamente desde la base de datos, entonces debe recibir su apodo y sus partidos, goles, victorias, empates y derrotas, y nunca su nombre completo ni su fecha de nacimiento.
+- AC-25 (RF-21): Dada una cuenta asociada al jugador/a "Pepe" en la organización A, cuando el administrador/a de la organización B la asocia al jugador/a "José", entonces el sistema debe permitirlo y cada organización debe mostrar a su propio jugador/a con sus propios datos.
+- AC-26 (RF-06a, RNF-01): Dada una solicitud de creación de una organización sin ningún administrador/a, enviada directamente a la base de datos, cuando el sistema la procesa, entonces debe rechazarla.
+- AC-27 (RF-07a): Dado un administrador/a de una organización, cuando crea un jugador/a con nombre, apodo y fecha de nacimiento, entonces ese jugador/a debe aparecer en el listado de jugadores/as de esa organización.
+- AC-28 (RF-07b): Dada una cuenta registrada con email "pepe@gmail.com" que no está asociada a ningún jugador/a de una organización y un jugador/a de esa organización sin cuenta asociada, cuando el administrador/a de esa organización asocia ese email a ese jugador/a, entonces la cuenta debe quedar asociada a ese jugador/a.
+- AC-29 (RF-14a): Dados dos jugadores/as de una organización con 5 y 3 partidos, cuando se ordena el listado de jugadores/as de esa organización por cantidad de partidos, entonces el jugador/a con 5 partidos debe aparecer primero.
+- AC-30 (RF-14a): Dados dos jugadores/as de una organización con 5 y 3 victorias, cuando se ordena el listado de jugadores/as de esa organización por cantidad de victorias, entonces el jugador/a con 5 victorias debe aparecer primero.
+- AC-31 (RF-14a): Dados dos jugadores/as de una organización con 5 y 3 empates, cuando se ordena el listado de jugadores/as de esa organización por cantidad de empates, entonces el jugador/a con 5 empates debe aparecer primero.
+- AC-32 (RF-14a): Dados dos jugadores/as de una organización con 5 y 3 derrotas, cuando se ordena el listado de jugadores/as de esa organización por cantidad de derrotas, entonces el jugador/a con 5 derrotas debe aparecer primero.
+- AC-33 (RF-16a): Dadas tres organizaciones "Beta" con 8 partidos finalizados, "Alfa" con 3 y "Gamma" con 3 (y 10 partidos pendientes), cuando se consulta el listado de organizaciones, entonces el orden debe ser "Beta", "Alfa", "Gamma".
+- AC-34a (RF-06e): Dada una organización con nombre "Los Martes", cuando su administrador/a cambia el nombre a "Los Miércoles", entonces debe guardarse "Los Miércoles".
+- AC-34b (RF-06e): Dada una organización con descripción "Fútbol los martes en Palermo", cuando su administrador/a cambia la descripción a "Fútbol los miércoles en Palermo", entonces debe guardarse "Fútbol los miércoles en Palermo".
+- AC-35a (RF-06f, RNF-01): Dado un usuario registrado que no es administrador/a de una organización, cuando intenta editar su nombre enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-35b (RF-06f, RNF-01): Dado un usuario registrado que no es administrador/a de una organización, cuando intenta editar su descripción enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-36 (RF-07e): Dada una organización con 39 jugadores/as, cuando el administrador/a crea un jugador/a, entonces el sistema debe aceptarlo y la organización debe quedar con 40 jugadores/as.
+- AC-37 (RF-07e): Dada una organización con 40 jugadores/as, cuando el administrador/a intenta crear otro jugador/a, entonces el sistema debe rechazarlo.
+- AC-38 (RNF-02a): Dadas las condiciones de medición de los RNF y una organización con 40 jugadores/as, cuando se miden 100 altas de partidos, entonces el p95 debe ser menor a 2 s.
+- AC-39 (RNF-02b): Dadas las condiciones de medición de los RNF y 100 partidos pendientes de 6 vs 6, cuando se mide la finalización de cada uno, entonces el p95 debe ser menor a 2 s.
+- AC-40 (RNF-03): Dadas las condiciones de medición de los RNF y una organización con 40 jugadores/as, cuando se miden 100 ediciones de jugadores/as, entonces el p95 debe ser menor a 2 s.
+- AC-41 (RNF-04): Dadas las condiciones de medición de los RNF y organizaciones con menos de 40 jugadores/as, cuando se miden 100 creaciones de jugadores/as, entonces el p95 debe ser menor a 2 s.
+- AC-42 (RNF-05): Dadas las condiciones de medición de los RNF y 200 organizaciones, cuando se mide 100 veces la carga del listado de organizaciones, entonces el p95 del tiempo hasta que se ven las primeras 10 debe ser menor a 2 s.
+- AC-43 (RNF-06): Dadas las condiciones de medición de los RNF y una organización con 200 partidos, cuando se mide 100 veces la carga de su listado de partidos, entonces el p95 del tiempo hasta que se ven los 10 más recientes debe ser menor a 2 s.
+- AC-44 (RNF-07): Dadas las condiciones de medición de los RNF y una organización con 40 jugadores/as, cuando se mide 100 veces la carga de su listado de jugadores/as, entonces el p95 del tiempo hasta que se ven los 40 debe ser menor a 2 s.
+- AC-45 (RF-19b): Dado un administrador/a, cuando carga un apodo de jugador/a de 40 caracteres, entonces el sistema debe aceptarlo.
+- AC-46 (RF-19b): Dado un administrador/a, cuando carga un apodo de jugador/a de 41 caracteres, entonces el sistema debe rechazarlo.
+- AC-47 (RF-19c): Dado un administrador/a, cuando carga como fecha de nacimiento de un jugador/a el 1 de enero de 1920, entonces el sistema debe aceptarla.
+- AC-48 (RF-19c): Dado un administrador/a, cuando carga como fecha de nacimiento de un jugador/a el 31 de diciembre de 1919, entonces el sistema debe rechazarla.
+- AC-49 (RF-04b, RNF-01): Dado un usuario en modo invitado, cuando intenta crear una organización enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-50a (RF-06b): Dado un partido pendiente, cuando el administrador/a de su organización cambia su lugar, entonces debe guardarse el lugar nuevo.
+- AC-50b (RF-06b): Dado un partido pendiente del 17 de marzo, cuando el administrador/a de su organización cambia su día al 18 de marzo, entonces debe guardarse el 18 de marzo.
+- AC-50c (RF-06b): Dado un partido pendiente con el jugador/a "Juancho" en el equipo A, cuando el administrador/a de su organización lo pasa al equipo B, entonces "Juancho" debe quedar en el equipo B y no en el equipo A.
+- AC-51a (RF-06g, RF-06j): Dado un partido finalizado 2 a 1 en el que "Juancho", del equipo A, hizo los 2 goles de su equipo y quedó con 6 goles, 1 victoria, 0 empates y 0 derrotas en total, cuando el administrador/a corrige sus goles a 1, entonces el marcador debe quedar 1 a 1 y "Juancho" debe quedar con 5 goles, 0 victorias, 1 empate y 0 derrotas.
+- AC-51b (RF-06h, RF-06j): Dado un partido finalizado que ganó el equipo de "Juancho", sin goles suyos, tras el cual quedó con 8 partidos y 3 victorias, cuando el administrador/a lo quita de su equipo, entonces "Juancho" debe quedar con 7 partidos y 2 victorias.
+- AC-51c (RF-06i): Dado un partido finalizado jugado en "Cancha 1", cuando el administrador/a corrige su lugar a "Cancha 2", entonces debe guardarse "Cancha 2".
+- AC-51d (RF-06k): Dado un partido finalizado, cuando el administrador/a intenta corregir los goles de un jugador/a a -1, entonces el sistema debe rechazarlo y el partido y las estadísticas deben quedar sin cambios.
+- AC-52 (RF-04a): Dado un usuario sin sesión iniciada, cuando elige ingresar en modo invitado, entonces debe ver el listado de organizaciones sin haber iniciado sesión.
+- AC-53 (RF-08b): Dado un partido pendiente, cuando el administrador/a lo finaliza cargando 2 goles para un jugador/a del equipo A y 1 gol para un jugador/a del equipo B, entonces el partido debe quedar finalizado con el marcador 2 a 1.
+- AC-54 (RF-08d): Dado un administrador/a, cuando intenta dar de alta un partido con un equipo sin jugadores/as, entonces el sistema debe rechazarlo.
+- AC-55 (RF-08e): Dado un administrador/a que da de alta un partido, cuando agrega a un equipo un jugador/a externo/a con el apodo "Tano", entonces el partido debe quedar con ese jugador/a externo/a en ese equipo.
+- AC-56 (RF-18, RNF-01): Dado un usuario, cuando intenta iniciar sesión con email y contraseña enviando la solicitud directamente al servicio de autenticación, entonces el servicio debe rechazarla.
+- AC-57 (RF-04b, RNF-01): Dado un usuario en modo invitado, cuando intenta editar un jugador/a enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-58 (RF-04b, RNF-01): Dado un usuario en modo invitado, cuando intenta crear un partido enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-59 (RF-02b, RNF-01): Dado un usuario registrado, cuando intenta crear una organización cuyo administrador/a es otra cuenta, enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla.
+- AC-60 (RF-22, RNF-01): Dado un administrador/a de una organización y un jugador/a de ella con 6 goles, cuando intenta cambiarle los goles a 100 enviando la operación directamente a la base de datos, entonces el sistema debe rechazarla y el jugador/a debe seguir con 6 goles.
+- AC-61 (RF-23): Dado un partido finalizado en el que "Juancho" quedó con 8 partidos, cuando el administrador/a intenta finalizarlo de nuevo, entonces el sistema debe rechazarlo y "Juancho" debe seguir con 8 partidos.
+- AC-62 (RF-08f): Dado un administrador/a, cuando intenta dar de alta un partido con el jugador/a "Juancho" en el equipo A y en el equipo B, entonces el sistema debe rechazarlo.
+- AC-63 (RF-08g): Dado un partido pendiente, cuando el administrador/a lo finaliza cargando 0 goles a un jugador/a, entonces el sistema debe aceptarlo.
+- AC-64 (RF-08g): Dado un partido pendiente, cuando el administrador/a intenta finalizarlo cargando -1 goles a un jugador/a, entonces el sistema debe rechazarlo.
+- AC-65 (RF-08g): Dado un partido pendiente, cuando el administrador/a intenta finalizarlo cargando 1,5 goles a un jugador/a, entonces el sistema debe rechazarlo.
+- AC-66 (RF-08h): Dado un partido pendiente cuyo día es hoy en hora de Argentina, cuando el administrador/a lo finaliza, entonces el sistema debe aceptarlo.
+- AC-67 (RF-08h): Dado un partido pendiente cuyo día es mañana en hora de Argentina, cuando el administrador/a intenta finalizarlo, entonces el sistema debe rechazarlo.
+- AC-68 (RF-19b): Dado un administrador/a que da de alta un partido, cuando agrega un jugador/a externo/a con un apodo de 41 caracteres, entonces el sistema debe rechazarlo.
+- AC-69 (RF-19d): Dado un administrador/a, cuando intenta crear un jugador/a sin nombre, entonces el sistema debe rechazarlo.
+- AC-70 (RF-19e): Dado un administrador/a, cuando intenta crear un jugador/a sin apodo, entonces el sistema debe rechazarlo.
+- AC-71 (RF-19e): Dado un administrador/a que da de alta un partido, cuando intenta agregar un jugador/a externo/a sin apodo, entonces el sistema debe rechazarlo.
+- AC-72 (RF-05): Dado un administrador/a, cuando crea un jugador/a con nombre y apodo y sin fecha de nacimiento, entonces el sistema debe aceptarlo.
+- AC-73 (RF-19f): Dado un administrador/a, cuando carga como fecha de nacimiento de un jugador/a el día de hoy en hora de Argentina, entonces el sistema debe aceptarla.
+- AC-74 (RF-19f): Dado un administrador/a, cuando carga como fecha de nacimiento de un jugador/a el día de mañana en hora de Argentina, entonces el sistema debe rechazarla.
+- AC-75 (RF-19g): Dado un usuario registrado, cuando intenta crear una organización sin nombre, entonces el sistema debe rechazarla.
+- AC-76 (RF-19h): Dado un usuario registrado, cuando crea una organización con un nombre de 40 caracteres, entonces el sistema debe aceptarla.
+- AC-77 (RF-19h): Dado un usuario registrado, cuando intenta crear una organización con un nombre de 41 caracteres, entonces el sistema debe rechazarla.
+- AC-78 (RF-03): Dado un usuario registrado, cuando crea una organización con nombre y sin descripción, entonces el sistema debe aceptarla.
+- AC-79 (RF-19i): Dado un usuario registrado, cuando crea una organización con una descripción de 200 caracteres, entonces el sistema debe aceptarla.
+- AC-80 (RF-19i): Dado un usuario registrado, cuando intenta crear una organización con una descripción de 201 caracteres, entonces el sistema debe rechazarla.
+- AC-81 (RF-19j): Dado un administrador/a, cuando intenta dar de alta un partido sin lugar, entonces el sistema debe rechazarlo.
+- AC-82 (RF-19k): Dado un administrador/a, cuando da de alta un partido con un lugar de 40 caracteres, entonces el sistema debe aceptarlo.
+- AC-83 (RF-19k): Dado un administrador/a, cuando intenta dar de alta un partido con un lugar de 41 caracteres, entonces el sistema debe rechazarlo.
+- AC-84 (RF-07f): Dado un administrador/a, cuando intenta asociar a un jugador/a de su organización el email "nadie@gmail.com", que no corresponde a ninguna cuenta registrada, entonces el sistema debe rechazarlo.
+- AC-85 (RF-12b): Dada una organización con 25 partidos, cuando se consulta su lista de partidos, entonces deben verse los 10 más recientes y, al elegir ver los siguientes, deben verse 20.
+- AC-86 (RF-16b): Dadas 25 organizaciones, cuando se consulta el listado de organizaciones, entonces deben verse las primeras 10 y, al elegir ver las siguientes, deben verse 20.
+- AC-87 (RF-14b): Dados dos jugadores/as de una organización con 5 y 3 partidos, cuando se consulta el listado de jugadores/as sin elegir un orden, entonces el jugador/a con 5 partidos debe aparecer primero.
+- AC-88 (RF-14c): Dados los jugadores/as "Tano" y "Beto", ambos con 4 goles, cuando se ordena el listado por cantidad de goles, entonces "Beto" debe aparecer antes que "Tano".
+- AC-89 (RNF-02c): Dadas las condiciones de medición de los RNF y 100 partidos finalizados de 6 vs 6, cuando se mide la corrección de los goles de cada uno, entonces el p95 debe ser menor a 2 s.
+- AC-90 (RF-19l): Dado un administrador/a, cuando intenta crear un jugador/a cuyo nombre es solo espacios ("   "), entonces el sistema debe rechazarlo.
+- AC-91 (RF-08e): Dado un partido pendiente, cuando el administrador/a de su organización agrega al equipo A un jugador/a externo/a con el apodo "Tano", entonces el partido debe quedar con ese jugador/a externo/a en el equipo A.
+- AC-92 (RF-08e, RF-06j, RF-20b): Dado un partido finalizado 1 a 1, cuando el administrador/a lo corrige agregando al equipo A un jugador/a externo/a "Tano" con 1 gol, entonces el marcador debe quedar 2 a 1 a favor del equipo A y "Tano" no debe registrar partidos, goles, victorias, empates ni derrotas.
+- AC-93 (RF-12c): Dados dos partidos de una organización del mismo día, "P1" dado de alta antes que "P2", cuando se consulta la lista de partidos de esa organización, entonces "P2" debe aparecer antes que "P1".
+
+## Fuera de Alcance
+- Interpretar un mensaje de WhatsApp (V 2.0)
+- Anotar el partido en vivo (V 2.0)
+- Votar al mejor (V 2.0)
+- El Elo (V 2.0)
+- La ficha para redes (V 2.0)
+- Anotador en reloj inteligente (V 2.0)
+- Invitaciones por link (V 2.0)
+- Reservas de cancha
+- Cobros de canchas
+- Notificaciones
+- App nativa
+- Otro deporte diferente a fútbol
+- Tinder de deporte. No se espera bajo ningún aspecto matchear jugadores/as con equipos u organizaciones.
+- Notas de jugadores/as. No va a haber calificaciones por otros jugadores hacia un jugador (el sistema de Elo va a ser dependiente de tus victorias/derrotas/empates).
+- Registrar quién arma los equipos o asignar quién arma el siguiente partido según si el partido fue parejo.
+- Agregar, quitar o transferir administradores/as. En el MVP cada organización tiene un único administrador/a: quien la creó.
+- Eliminar jugadores/as o partidos.
+- Desasociar una cuenta de un jugador/a.
+- Editar o eliminar la propia cuenta.
+- Salir de una organización por cuenta propia.
+- Buscar organizaciones (solo existe el listado ordenado de RF-16a).
+
+## Riesgos y Dependencias
+- Riesgo: Un/a jugador/a no está de acuerdo con la contabilización de sus goles en el partido → mitigación: el administrador/a puede corregir el partido finalizado, sin límite de tiempo, y las estadísticas se recalculan (RF-06g a RF-06k).
+- Riesgo: Poca practicidad al momento de realizar el conteo de goles durante el partido → mitigación: implementar un método por organización para facilitar la anotación, como puede ser una hoja con los nombres y un lápiz o agregar un anotador en un reloj inteligente (V 2.0)
+- Riesgo: Poco interés de los jugadores al visualizar sus datos y perder el uso de la misma → mitigación: se acepta en el MVP; se monitorea con la métrica del objetivo (80% de partidos finalizados por mes).
+- Riesgo: El administrador/a deja de participar y la organización queda sin quien cargue partidos → mitigación: se acepta en el MVP; la gestión de administradores/as se evalúa para una versión posterior.
+- Dependencia: Firebase Auth (login con Google), Firestore (base de datos), Vercel (hosting).
