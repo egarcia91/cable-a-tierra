@@ -32,3 +32,10 @@ describe("reglas base", () => {
     await assertFails(getDoc(doc(db, "cualquiera/doc")));
   });
 });
+
+describe("users", () => {
+  it("un usuario no puede crear su propio documento de users: lo registra el servidor", async () => {
+    const db = env.authenticatedContext("alice").firestore();
+    await assertFails(setDoc(doc(db, "users/alice"), { email: "alice@gmail.com" }));
+  });
+});

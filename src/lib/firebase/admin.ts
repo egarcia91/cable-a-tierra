@@ -9,6 +9,9 @@ const useEmulators = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === "true";
 if (useEmulators) {
   process.env.FIRESTORE_EMULATOR_HOST ??= "localhost:8080";
   process.env.FIREBASE_AUTH_EMULATOR_HOST ??= "localhost:9099";
+  // Sin esto, la primera llamada espera ~20 s buscando el servidor de metadatos
+  // de Google Cloud, que en local no existe.
+  process.env.METADATA_SERVER_DETECTION ??= "none";
 }
 
 function init() {

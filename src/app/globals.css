@@ -15,3 +15,40 @@ main {
   margin: 0 auto;
   padding: 1rem;
 }
+
+button,
+.button-secondary {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  border: 1px solid #1f6f3f;
+  border-radius: 0.5rem;
+  font: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button {
+  background: #1f6f3f;
+  color: #fff;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.button-secondary {
+  background: #fff;
+  color: #1f6f3f;
+}
+
+.login {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+[role="alert"] {
+  color: #b00020;
+}

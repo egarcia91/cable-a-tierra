@@ -15,12 +15,13 @@ MVP solo fútbol, con login de Google y organizaciones administradas. Requisitos
 ```bash
 npm install
 cp .env.example .env.local     # credenciales de Firebase
-npx firebase emulators:start   # en otra terminal
+npm run emulators             # en otra terminal (Auth 9099, Firestore 8080, UI 4000)
 npm run dev
 npm test                       # Vitest
-npm run test:rules             # Security Rules contra el emulador (lo levanta solo)
+npm run test:integration       # Security Rules y servidor contra los emuladores
 npm run test:e2e               # Playwright
 ```
+`test:integration` y `test:e2e` usan los emuladores ya levantados. `test:integration` borra sus datos.
 
 ## Qué NO hacer
 - No implementar el borrado de organizaciones (RF-17).
