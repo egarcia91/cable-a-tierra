@@ -24,6 +24,9 @@ export function LoginScreen() {
         <p>
           <Link href="/organizaciones">Ver organizaciones</Link>
         </p>
+        <p>
+          <Link href="/organizaciones/nueva">Crear organización</Link>
+        </p>
         <button type="button" onClick={signOutUser}>
           Cerrar sesión
         </button>

@@ -1,8 +1,9 @@
 import "server-only";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import { adminAuth } from "@/lib/firebase/admin";
+import { UserError } from "./errors";
 
-export class AuthError extends Error {}
+export class AuthError extends UserError {}
 
 /**
  * Verifica el ID token del cliente y devuelve el usuario.

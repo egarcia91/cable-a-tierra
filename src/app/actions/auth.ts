@@ -1,18 +1,13 @@
 "use server";
 
-import { AuthError, requireUser } from "@/server/auth";
+import type { ActionResult } from "@/lib/action-result";
+import { requireUser } from "@/server/auth";
+import { runAction } from "@/server/run-action";
 import { ensureUserRegistered } from "@/server/users";
 
-export type ActionResult = { ok: true } | { ok: false; error: string };
-
 export async function registerUser(idToken: string): Promise<ActionResult> {
-  try {
+  return runAction("registerUser", async () => {
     const user = await requireUser(idToken);
     await ensureUserRegistered(user);
-    return { ok: true };
-  } catch (error) {
-    if (error instanceof AuthError) return { ok: false, error: error.message };
-    console.error("registerUser", error);
-    return { ok: false, error: "No pudimos registrarte. Probá de nuevo." };
-  }
+  });
 }

@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
+import { signInWithGoogle } from "./helpers";
 
 // Lee users/ directo del emulador con el token "owner", que saltea las rules.
 async function registeredEmails(request: APIRequestContext): Promise<string[]> {
@@ -28,23 +29,8 @@ test("ingresar como invitado lleva a las organizaciones sin iniciar sesión (AC-
 
 test("iniciar y cerrar sesión con Google (AC-09b)", async ({ page, request }) => {
   test.setTimeout(60_000);
-  await page.goto("/");
 
-  // El emulador de Auth abre su propio selector de cuentas de Google. Sus
-  // campos no tienen labels asociados, por eso se ubican por id.
-  const popupPromise = page.waitForEvent("popup");
-  await page.getByRole("button", { name: "Iniciar sesión con Google" }).click();
-  const popup = await popupPromise;
-  // Si se hace clic antes de que cargue el script del widget, el login no se completa.
-  await popup.waitForLoadState("load");
-  await popup.locator("#add-account-button").click();
-  const email = `e2e-${Date.now()}@gmail.com`;
-  await popup.locator("#email-input").fill(email);
-  await popup.locator("#display-name-input").fill("Juancho E2E");
-  await popup.locator("#sign-in").click();
-
-  // En dev, la primera llamada al servidor compila firebase-admin (~20 s en /mnt/c).
-  await expect(page.getByText("Hola, Juancho E2E.")).toBeVisible({ timeout: 45_000 });
+  const email = await signInWithGoogle(page, "Juancho E2E");
   expect(await registeredEmails(request)).toContain(email);
 
   await page.getByRole("button", { name: "Cerrar sesión" }).click();

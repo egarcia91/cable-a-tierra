@@ -52,3 +52,25 @@ button:disabled {
 [role="alert"] {
   color: #b00020;
 }
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.form input,
+.form textarea {
+  padding: 0.6rem;
+  border: 1px solid #999;
+  border-radius: 0.5rem;
+  font: inherit;
+  font-weight: 400;
+}
