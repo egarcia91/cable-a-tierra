@@ -18,6 +18,7 @@ cp .env.example .env.local     # credenciales de Firebase
 npx firebase emulators:start   # en otra terminal
 npm run dev
 npm test                       # Vitest
+npm run test:rules             # Security Rules contra el emulador (lo levanta solo)
 npm run test:e2e               # Playwright
 ```
 

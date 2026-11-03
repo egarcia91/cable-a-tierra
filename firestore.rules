@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Todas las escrituras pasan por el servidor (Admin SDK, que ignora estas reglas).
+// El cliente solo lee. Las lecturas se van habilitando colección por colección.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
