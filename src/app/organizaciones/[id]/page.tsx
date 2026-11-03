@@ -17,6 +17,9 @@ export default function OrganizationPage() {
 
   const { organization } = state;
   const isAdmin = user?.uid === organization.adminUid;
+  // Miembros: el admin y las cuentas asociadas a un jugador/a (RF-04c). Es solo para
+  // decidir qué pedir: quién puede leer los datos privados lo deciden las rules.
+  const isMember = user !== null && organization.memberUids.includes(user.uid);
 
   // No hay opción de eliminar la organización (RF-17, AC-20a).
   return (
@@ -28,7 +31,7 @@ export default function OrganizationPage() {
           <Link href={`/organizaciones/${organization.id}/editar`}>Editar organización</Link>
         </p>
       )}
-      <PlayersSection organization={organization} isAdmin={isAdmin} />
+      <PlayersSection organization={organization} isAdmin={isAdmin} isMember={isMember} />
     </main>
   );
 }

@@ -17,8 +17,10 @@ export function usePlayerWithPrivate(organizationId: string, playerId: string): 
 
   useEffect(() => {
     let cancelled = false;
-    const ref = doc(db, "organizations", organizationId, "players", playerId);
-    Promise.all([getDoc(ref), getDoc(doc(ref, "private", "data"))]).then(
+    Promise.all([
+      getDoc(doc(db, "organizations", organizationId, "players", playerId)),
+      getDoc(doc(db, "organizations", organizationId, "playersPrivate", playerId)),
+    ]).then(
       ([pub, priv]) => {
         if (cancelled) return;
         if (!pub.exists()) return setState({ status: "not-found" });

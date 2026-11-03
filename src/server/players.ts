@@ -9,12 +9,13 @@ import { getOrganizationAsAdmin } from "./organizations";
 
 // Cada jugador/a se guarda en dos documentos:
 // - players/{id}: público (apodo y estadísticas), lo ve cualquiera (RF-04d).
-// - players/{id}/private/data: nombre y fecha de nacimiento, solo para miembros (RF-04c).
+// - playersPrivate/{id}: nombre y fecha de nacimiento, solo para miembros (RF-04c).
+//   Es una colección aparte para que un miembro lea todos con una sola consulta.
 const playersOf = (organizationId: string) =>
   adminDb.collection("organizations").doc(organizationId).collection("players");
 
 const privateOf = (organizationId: string, playerId: string) =>
-  playersOf(organizationId).doc(playerId).collection("private").doc("data");
+  adminDb.collection("organizations").doc(organizationId).collection("playersPrivate").doc(playerId);
 
 /**
  * Crea un jugador/a con las estadísticas en 0 (RF-05, RF-07a). Rechaza si la

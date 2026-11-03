@@ -12,8 +12,10 @@ let organizationId: string;
 const juan = { name: "Juan Pérez", nickname: "Juancho", birthDate: "1990-05-10" };
 
 async function player(id: string) {
-  const ref = adminDb.doc(`organizations/${organizationId}/players/${id}`);
-  const [pub, priv] = await Promise.all([ref.get(), ref.collection("private").doc("data").get()]);
+  const [pub, priv] = await Promise.all([
+    adminDb.doc(`organizations/${organizationId}/players/${id}`).get(),
+    adminDb.doc(`organizations/${organizationId}/playersPrivate/${id}`).get(),
+  ]);
   return { ...pub.data(), ...priv.data() };
 }
 

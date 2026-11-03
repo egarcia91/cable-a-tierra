@@ -1,12 +1,12 @@
 import { afterAll, beforeAll, beforeEach, describe, it } from "vitest";
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from "@firebase/rules-unit-testing";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { createTestEnv } from "./setup";
 
 let env: RulesTestEnvironment;
 
 const PLAYER = "organizations/org1/players/p1";
-const PRIVATE = `${PLAYER}/private/data`;
+const PRIVATE = "organizations/org1/playersPrivate/p1";
 
 beforeAll(async () => {
   env = await createTestEnv();
@@ -54,6 +54,20 @@ describe("players: lectura", () => {
 
   it("una cuenta asociada a un jugador/a ve nombre y fecha de nacimiento (AC-08b)", async () => {
     await assertSucceeds(getDoc(doc(as("asociado"), PRIVATE)));
+  });
+});
+
+describe("playersPrivate: consulta de todo el listado", () => {
+  const ALL_PRIVATE = "organizations/org1/playersPrivate";
+
+  it("un miembro lee los datos privados de todos con una consulta (AC-08a, AC-08b)", async () => {
+    await assertSucceeds(getDocs(collection(as("admin"), ALL_PRIVATE)));
+    await assertSucceeds(getDocs(collection(as("asociado"), ALL_PRIVATE)));
+  });
+
+  it("un invitado o un no miembro no pueden consultarlos (AC-06, AC-24)", async () => {
+    await assertFails(getDocs(collection(guest(), ALL_PRIVATE)));
+    await assertFails(getDocs(collection(as("otro"), ALL_PRIVATE)));
   });
 });
 

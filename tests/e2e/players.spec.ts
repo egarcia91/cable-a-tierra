@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { signInWithGoogle } from "./helpers";
 
-test("el admin agrega y edita un jugador/a; un invitado ve solo el apodo (AC-27, AC-18b)", async ({ page, browser }) => {
+test("el admin agrega y edita un jugador/a; un invitado ve solo el apodo (AC-27, AC-18b, AC-08a, AC-06)", async ({ page, browser }) => {
   test.setTimeout(120_000);
   await signInWithGoogle(page, "Admin Jugadores");
 
@@ -18,7 +18,9 @@ test("el admin agrega y edita un jugador/a; un invitado ve solo el apodo (AC-27,
   await page.getByRole("button", { name: "Agregar jugador/a" }).click();
 
   await expect(page.getByRole("heading", { name: "Jugadores/as (1)" })).toBeVisible({ timeout: 30_000 });
-  await expect(page.locator("ul.players")).toContainText("Juancho");
+  await expect(page.locator("table.players")).toContainText("Juancho");
+  // El admin es miembro: ve nombre completo y fecha de nacimiento (AC-08a).
+  await expect(page.locator("table.players")).toContainText("Juan Pérez · 10/05/1990");
 
   await page.getByRole("link", { name: "Editar a Juancho" }).click();
   await expect(page.getByLabel("Nombre completo")).toHaveValue("Juan Pérez");
@@ -26,15 +28,17 @@ test("el admin agrega y edita un jugador/a; un invitado ve solo el apodo (AC-27,
   await page.getByLabel("Apodo").fill("Juanchi");
   await page.getByRole("button", { name: "Guardar cambios" }).click();
 
-  await expect(page.locator("ul.players")).toContainText("Juanchi", { timeout: 30_000 });
+  await expect(page.locator("table.players")).toContainText("Juanchi", { timeout: 30_000 });
 
   // Otro navegador, sin sesión: ve el apodo pero no puede editar.
   const guest = await browser.newPage();
   await guest.goto(organizationUrl);
-  await expect(guest.locator("ul.players")).toContainText("Juanchi");
+  await expect(guest.locator("table.players")).toContainText("Juanchi");
   await expect(guest.getByRole("link", { name: /Editar/ })).toHaveCount(0);
   await expect(guest.getByRole("link", { name: "Agregar jugador/a" })).toHaveCount(0);
+  // Un invitado no ve nombre ni fecha de nacimiento (AC-06).
   await expect(guest.getByText("Juan Pérez")).toHaveCount(0);
+  await expect(guest.getByText("10/05/1990")).toHaveCount(0);
   await guest.close();
 });
 

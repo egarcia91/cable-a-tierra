@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { signInWithGoogle } from "./helpers";
 
-test("el admin asocia la cuenta de un usuario registrado a un jugador/a (AC-28, AC-84)", async ({ page, browser }) => {
+test("el admin asocia la cuenta de un usuario registrado a un jugador/a (AC-28, AC-84, AC-08b)", async ({ page, browser }) => {
   test.setTimeout(120_000);
 
   // Pepe entra a la app en su propio navegador: así queda registrado.
-  const pepePage = await (await browser.newContext()).newPage();
+  const pepeContext = await browser.newContext();
+  const pepePage = await pepeContext.newPage();
   const pepeEmail = await signInWithGoogle(pepePage, "Pepe E2E");
-  await pepePage.close();
 
   await signInWithGoogle(page, "Admin Cuentas");
   await page.getByRole("link", { name: "Crear organización" }).click();
@@ -30,5 +30,11 @@ test("el admin asocia la cuenta de un usuario registrado a un jugador/a (AC-28, 
   await expect(page.getByText("Este jugador/a ya tiene una cuenta asociada.")).toBeVisible();
 
   await page.goBack();
-  await expect(page.locator("ul.players")).toContainText("Pepe · con cuenta");
+  await expect(page.locator("table.players")).toContainText("Pepe · con cuenta");
+
+  // Pepe, ahora miembro sin ser admin, ve nombre completo (AC-08b) pero no puede editar.
+  await pepePage.goto(page.url());
+  await expect(pepePage.locator("table.players")).toContainText("Pepe Argento");
+  await expect(pepePage.getByRole("link", { name: /Editar/ })).toHaveCount(0);
+  await pepeContext.close();
 });
