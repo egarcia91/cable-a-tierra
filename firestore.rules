@@ -11,6 +11,18 @@ service cloud.firestore {
     // Datos públicos de la organización: cualquiera los ve, incluso invitados (RF-16a).
     match /organizations/{organizationId} {
       allow read: if true;
+
+      // Apodo y estadísticas: públicos (RF-13, RF-04d).
+      match /players/{playerId} {
+        allow read: if true;
+
+        // Nombre y fecha de nacimiento: solo miembros, es decir, el admin y las
+        // cuentas asociadas a un jugador/a de la organización (RF-04c, RF-04d).
+        match /private/{document} {
+          allow read: if request.auth != null
+            && request.auth.uid in get(/databases/$(database)/documents/organizations/$(organizationId)).data.memberUids;
+        }
+      }
     }
   }
 }

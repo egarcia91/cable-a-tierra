@@ -93,3 +93,15 @@ button:disabled {
   color: #555;
   white-space: nowrap;
 }
+
+.players {
+  list-style: none;
+  padding: 0;
+}
+
+.players li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
