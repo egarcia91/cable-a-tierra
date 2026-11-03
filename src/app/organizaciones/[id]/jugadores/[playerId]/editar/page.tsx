@@ -1,8 +1,9 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { updatePlayerAction } from "@/app/actions/players";
+import { linkPlayerAccountAction, updatePlayerAction } from "@/app/actions/players";
 import { useAuth } from "@/components/AuthProvider";
+import { LinkAccountForm } from "@/components/LinkAccountForm";
 import { PlayerForm } from "@/components/PlayerForm";
 import { usePlayerWithPrivate } from "@/hooks/usePlayer";
 
@@ -45,6 +46,12 @@ function EditPlayer({
           if (result.ok) router.push(`/organizaciones/${organizationId}`);
           return result;
         }}
+      />
+
+      <h2>Cuenta asociada</h2>
+      <LinkAccountForm
+        linked={state.player.linkedUid !== null}
+        onLink={async (email) => linkPlayerAccountAction(await getIdToken(), organizationId, playerId, { email })}
       />
     </main>
   );

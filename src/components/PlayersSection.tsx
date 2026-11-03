@@ -28,7 +28,10 @@ export function PlayersSection({ organization, isAdmin }: { organization: Organi
         <ul className="players">
           {state.players.map((player) => (
             <li key={player.id}>
-              <span>{player.nickname}</span>
+              <span>
+                {player.nickname}
+                {player.linkedUid && <small> · con cuenta</small>}
+              </span>
               {isAdmin && (
                 <Link
                   href={`/organizaciones/${organization.id}/jugadores/${player.id}/editar`}

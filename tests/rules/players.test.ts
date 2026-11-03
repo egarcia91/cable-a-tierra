@@ -75,3 +75,15 @@ describe("players: escritura desde el cliente", () => {
     await assertFails(updateDoc(doc(as("admin"), PLAYER), { goals: 100 }));
   });
 });
+
+describe("accountLinks", () => {
+  it("nadie lo lee ni escribe desde el cliente, ni el admin", async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), "organizations/org1/accountLinks/asociado"), { playerId: "p1" });
+    });
+
+    await assertFails(getDoc(doc(as("admin"), "organizations/org1/accountLinks/asociado")));
+    await assertFails(getDoc(doc(guest(), "organizations/org1/accountLinks/asociado")));
+    await assertFails(setDoc(doc(as("admin"), "organizations/org1/accountLinks/otro"), { playerId: "p1" }));
+  });
+});
