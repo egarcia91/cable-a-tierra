@@ -5,7 +5,9 @@ import { defineConfig, devices } from "@playwright/test";
 // Java del emulador de Firestore, que queda ocupando el puerto 8080.
 export default defineConfig({
   testDir: "tests/e2e",
-  globalSetup: "tests/helpers/check-emulators.ts",
+  globalSetup: "tests/e2e/global-setup.ts",
+  // En dev cada página se compila la primera vez que se visita (lento en /mnt/c).
+  expect: { timeout: 15_000 },
   use: { baseURL: "http://localhost:3000" },
   projects: [{ name: "mobile-chrome", use: { ...devices["Pixel 7"] } }],
   webServer: {

@@ -21,3 +21,26 @@ export async function signInWithGoogle(page: Page, displayName: string): Promise
   await expect(page.getByText(`Hola, ${displayName}.`)).toBeVisible({ timeout: 45_000 });
   return email;
 }
+
+const FIRESTORE_DOCUMENTS =
+  "http://localhost:8080/v1/projects/demo-cable-a-tierra/databases/(default)/documents";
+
+/** Crea una organización directo en el emulador (token "owner": saltea las rules). */
+export async function seedOrganization(name: string, finishedMatchCount: number): Promise<void> {
+  const res = await fetch(`${FIRESTORE_DOCUMENTS}/organizations`, {
+    method: "POST",
+    headers: { Authorization: "Bearer owner", "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fields: {
+        name: { stringValue: name },
+        nameSort: { stringValue: name.toLowerCase() },
+        description: { nullValue: null },
+        adminUid: { stringValue: "seed-admin" },
+        memberUids: { arrayValue: { values: [{ stringValue: "seed-admin" }] } },
+        playerCount: { integerValue: "0" },
+        finishedMatchCount: { integerValue: String(finishedMatchCount) },
+      },
+    }),
+  });
+  if (!res.ok) throw new Error(`No se pudo sembrar ${name}: ${res.status}`);
+}

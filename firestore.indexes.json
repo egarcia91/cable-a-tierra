@@ -1,4 +1,13 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "organizations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "finishedMatchCount", "order": "DESCENDING" },
+        { "fieldPath": "nameSort", "order": "ASCENDING" }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }
