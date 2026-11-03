@@ -1,3 +1,7 @@
+import type { TeamEntry } from "@/lib/validation/match";
+
+export type { TeamEntry };
+
 /** Datos públicos de una organización (organizations/{id}). */
 export type Organization = {
   id: string;
@@ -25,4 +29,14 @@ export type Player = {
 export type PlayerPrivate = {
   name: string;
   birthDate: string | null;
+};
+
+/** Un partido (organizations/{id}/matches/{matchId}). */
+export type Match = {
+  id: string;
+  date: string;
+  place: string;
+  status: "pending" | "finished";
+  teamA: TeamEntry[];
+  teamB: TeamEntry[];
 };

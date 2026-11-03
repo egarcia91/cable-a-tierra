@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { todayInArgentina } from "@/lib/dates";
+import { isRealDate } from "./dates";
 import { requiredText } from "./text";
 
 export const PLAYER_NAME_MAX = 40;
@@ -12,13 +13,6 @@ export const nicknameSchema = requiredText(PLAYER_NICKNAME_MAX, {
   empty: "El jugador/a tiene que tener un apodo.",
   tooLong: `El apodo puede tener hasta ${PLAYER_NICKNAME_MAX} caracteres.`,
 });
-
-/** true si es una fecha real en formato YYYY-MM-DD (rechaza, por ejemplo, 2026-02-30). */
-function isRealDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const date = new Date(`${value}T00:00:00Z`);
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
 
 // Las fechas YYYY-MM-DD se comparan bien como texto.
 const birthDateSchema = z

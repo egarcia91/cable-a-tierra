@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import { MatchesSection } from "@/components/MatchesSection";
 import { PlayersSection } from "@/components/PlayersSection";
 import { useOrganization } from "@/hooks/useOrganization";
 
@@ -32,6 +33,7 @@ export default function OrganizationPage() {
         </p>
       )}
       <PlayersSection organization={organization} isAdmin={isAdmin} isMember={isMember} />
+      <MatchesSection organizationId={organization.id} isAdmin={isAdmin} />
     </main>
   );
 }

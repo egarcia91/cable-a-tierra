@@ -7,6 +7,14 @@
         { "fieldPath": "finishedMatchCount", "order": "DESCENDING" },
         { "fieldPath": "nameSort", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "matches",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "date", "order": "DESCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

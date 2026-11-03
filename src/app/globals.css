@@ -139,3 +139,45 @@ button:disabled {
   background: #eef6f0;
   font-weight: 700;
 }
+
+.lineup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+}
+
+/* Más específico que ".form label", que apila label e input en columna. */
+.form .lineup-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+}
+
+.lineup-row input {
+  flex: 1;
+}
+
+.teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.team,
+.matches {
+  list-style: none;
+  padding: 0;
+}
+
+.matches li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}

@@ -73,3 +73,20 @@ export async function seedPlayer(organizationId: string, nickname: string, name:
     id,
   );
 }
+
+/** Crea una organización desde la UI con el usuario logueado y vuelve a su página. */
+export async function createOrganizationViaUi(page: Page, name: string): Promise<void> {
+  await page.goto("/organizaciones/nueva");
+  await page.getByLabel("Nombre").fill(name);
+  await page.getByRole("button", { name: "Crear organización" }).click();
+  await expect(page.getByRole("heading", { name })).toBeVisible({ timeout: 30_000 });
+}
+
+/** Agrega un jugador/a desde la UI; termina en la página de la organización. */
+export async function addPlayerViaUi(page: Page, name: string, nickname: string): Promise<void> {
+  await page.getByRole("link", { name: "Agregar jugador/a" }).click();
+  await page.getByLabel("Nombre completo").fill(name);
+  await page.getByLabel("Apodo").fill(nickname);
+  await page.getByRole("button", { name: "Agregar jugador/a" }).click();
+  await expect(page.locator("table.players")).toContainText(nickname, { timeout: 30_000 });
+}

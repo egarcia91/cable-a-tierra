@@ -17,6 +17,11 @@ service cloud.firestore {
         allow read: if true;
       }
 
+      // Partidos: los ve cualquiera, incluso invitados (RF-12a).
+      match /matches/{matchId} {
+        allow read: if true;
+      }
+
       // Nombre y fecha de nacimiento: solo miembros, es decir, el admin y las
       // cuentas asociadas a un jugador/a de la organización (RF-04c, RF-04d).
       match /playersPrivate/{playerId} {
