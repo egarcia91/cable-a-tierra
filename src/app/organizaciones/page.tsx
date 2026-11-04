@@ -10,7 +10,7 @@ function finishedMatchesLabel(count: number): string {
 
 export default function OrganizationsPage() {
   const { user } = useAuth();
-  const { organizations, status, hasMore, loadMore } = useOrganizationsList();
+  const { items: organizations, status, hasMore, loadMore } = useOrganizationsList();
 
   return (
     <main>

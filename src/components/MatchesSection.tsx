@@ -1,31 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { collection, limit, onSnapshot, orderBy, query } from "firebase/firestore";
-import { db } from "@/lib/firebase/client";
+import { useMatchesList } from "@/hooks/useMatchesList";
 import { formatDate } from "@/lib/format";
-import { matchFromSnapshot } from "@/lib/queries/matches";
 import type { Match } from "@/lib/types";
 
-// Los 10 más recientes. La paginación y el detalle del listado llegan en el paso 12.
-export function MatchesSection({ organizationId, isAdmin }: { organizationId: string; isAdmin: boolean }) {
-  const [matches, setMatches] = useState<Match[] | null>(null);
+const statusLabel = (match: Match) =>
+  match.status === "pending" ? "Pendiente" : `Finalizado ${match.scoreA} – ${match.scoreB}`;
 
-  useEffect(
-    () =>
-      onSnapshot(
-        query(
-          collection(db, "organizations", organizationId, "matches"),
-          orderBy("date", "desc"),
-          orderBy("createdAt", "desc"),
-          limit(10),
-        ),
-        (snap) => setMatches(snap.docs.map(matchFromSnapshot)),
-        () => setMatches([]),
-      ),
-    [organizationId],
-  );
+/** Partidos de la organización de a 10, del más reciente al más antiguo (RF-12). Los ve cualquiera. */
+export function MatchesSection({ organizationId, isAdmin }: { organizationId: string; isAdmin: boolean }) {
+  const { items: matches, status, hasMore, loadMore } = useMatchesList(organizationId);
 
   return (
     <section>
@@ -35,19 +20,25 @@ export function MatchesSection({ organizationId, isAdmin }: { organizationId: st
           <Link href={`/organizaciones/${organizationId}/partidos/nuevo`}>Dar de alta un partido</Link>
         </p>
       )}
-      {matches === null && <p>Cargando…</p>}
-      {matches?.length === 0 && <p>Todavía no hay partidos.</p>}
-      {matches && matches.length > 0 && (
-        <ul className="matches">
-          {matches.map((match) => (
-            <li key={match.id}>
-              <Link href={`/organizaciones/${organizationId}/partidos/${match.id}`}>
-                {formatDate(match.date)} · {match.place}
-              </Link>
-              <span>{match.status === "pending" ? "Pendiente" : "Finalizado"}</span>
-            </li>
-          ))}
-        </ul>
+      {status === "loading" && <p>Cargando…</p>}
+      {status === "error" && <p role="alert">No pudimos cargar los partidos.</p>}
+      {status === "ready" && matches.length === 0 && <p>Todavía no hay partidos.</p>}
+
+      <ol className="matches">
+        {matches.map((match) => (
+          <li key={match.id}>
+            <Link href={`/organizaciones/${organizationId}/partidos/${match.id}`}>
+              {formatDate(match.date)} · {match.place}
+            </Link>
+            <span>{statusLabel(match)}</span>
+          </li>
+        ))}
+      </ol>
+
+      {hasMore && (
+        <button type="button" onClick={loadMore} disabled={status === "loading-more"}>
+          {status === "loading-more" ? "Cargando…" : "Ver 10 más"}
+        </button>
       )}
     </section>
   );

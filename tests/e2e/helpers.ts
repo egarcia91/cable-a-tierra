@@ -74,6 +74,22 @@ export async function seedPlayer(organizationId: string, nickname: string, name:
   );
 }
 
+/** Crea un partido directo en el emulador; el finalizado queda 2 a 1. */
+export function seedMatch(organizationId: string, date: string, status: "pending" | "finished"): Promise<string> {
+  const externals = (nickname: string) => ({
+    arrayValue: { values: [{ mapValue: { fields: { type: { stringValue: "external" }, nickname: { stringValue: nickname } } } }] },
+  });
+  return seedDocument(`organizations/${organizationId}/matches`, {
+    date: { stringValue: date },
+    place: { stringValue: `Cancha del ${date}` },
+    status: { stringValue: status },
+    teamA: externals("Tano"),
+    teamB: externals("Lucho"),
+    ...(status === "finished" ? { scoreA: int(2), scoreB: int(1) } : {}),
+    createdAt: { timestampValue: new Date().toISOString() },
+  });
+}
+
 /** Crea una organización desde la UI con el usuario logueado y vuelve a su página. */
 export async function createOrganizationViaUi(page: Page, name: string): Promise<void> {
   await page.goto("/organizaciones/nueva");

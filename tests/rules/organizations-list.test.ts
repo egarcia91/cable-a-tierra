@@ -28,7 +28,7 @@ async function seed(organizations: { name: string; finishedMatchCount: number }[
 
 // Las consultas se hacen como invitado: también prueba que las rules permiten listar.
 const guestDb = () => env.unauthenticatedContext().firestore() as unknown as Firestore;
-const names = (page: { organizations: { name: string }[] }) => page.organizations.map((o) => o.name);
+const names = (page: { items: { name: string }[] }) => page.items.map((o) => o.name);
 
 beforeAll(async () => {
   env = await createTestEnv();
