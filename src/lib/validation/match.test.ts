@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchInputSchema } from "./match";
+import { finishMatchInputSchema, matchInputSchema } from "./match";
 import { firstError } from "./text";
 
 const juancho = { type: "player", playerId: "juancho" } as const;
@@ -61,5 +61,28 @@ describe("matchInputSchema", () => {
   it("rechaza un día inválido", () => {
     expect(firstError(parse({ ...valid, date: "2026-02-30" }))).toBe("Elegí un día válido para el partido.");
     expect(firstError(parse({ ...valid, date: "" }))).toBe("Elegí un día válido para el partido.");
+  });
+});
+
+describe("finishMatchInputSchema", () => {
+  const scored = (goals: unknown, ownGoals: unknown = 0) => ({ ...juancho, goals, ownGoals });
+  const parseFinish = (entry: unknown) => finishMatchInputSchema.safeParse({ teamA: [entry], teamB: [{ ...beto, goals: 0, ownGoals: 0 }] });
+  const GOALS_ERROR = "Los goles tienen que ser números enteros mayores o iguales a 0.";
+
+  it("acepta 0 goles (AC-63)", () => {
+    expect(parseFinish(scored(0)).success).toBe(true);
+  });
+
+  it("rechaza goles negativos (AC-64)", () => {
+    expect(firstError(parseFinish(scored(-1)))).toBe(GOALS_ERROR);
+  });
+
+  it("rechaza goles no enteros (AC-65)", () => {
+    expect(firstError(parseFinish(scored(1.5)))).toBe(GOALS_ERROR);
+  });
+
+  it("rechaza goles en contra inválidos o que no son números", () => {
+    expect(firstError(parseFinish(scored(0, -1)))).toBe(GOALS_ERROR);
+    expect(firstError(parseFinish(scored("2")))).toBe(GOALS_ERROR);
   });
 });

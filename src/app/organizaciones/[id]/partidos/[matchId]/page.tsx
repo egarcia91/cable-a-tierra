@@ -8,6 +8,7 @@ import { TeamList } from "@/components/TeamList";
 import { useMatch } from "@/hooks/useMatch";
 import { useOrganization } from "@/hooks/useOrganization";
 import { usePlayers } from "@/hooks/usePlayers";
+import { todayInArgentina } from "@/lib/dates";
 import { formatDate } from "@/lib/format";
 
 export default function MatchPage() {
@@ -36,15 +37,24 @@ export default function MatchPage() {
       <p>
         <Link href={`/organizaciones/${id}`}>{organization.organization.name}</Link>
       </p>
-      <h1>
-        Partido del {formatDate(m.date)}
-      </h1>
+      <h1>Partido del {formatDate(m.date)}</h1>
       <p>
         {m.place} · {m.status === "pending" ? "Pendiente" : "Finalizado"}
       </p>
+      {m.status === "finished" && (
+        <p className="score" aria-label="Marcador">
+          Equipo A {m.scoreA} – {m.scoreB} Equipo B
+        </p>
+      )}
       {isAdmin && m.status === "pending" && (
-        <p>
+        <p className="actions">
           <Link href={`/organizaciones/${id}/partidos/${matchId}/editar`}>Editar partido</Link>
+          {/* Un partido se finaliza desde su día en hora de Argentina (RF-08h). */}
+          {m.date <= todayInArgentina() ? (
+            <Link href={`/organizaciones/${id}/partidos/${matchId}/finalizar`}>Finalizar partido</Link>
+          ) : (
+            <span>Se puede finalizar desde el {formatDate(m.date)}.</span>
+          )}
         </p>
       )}
       <div className="teams">

@@ -1,6 +1,6 @@
-import type { TeamEntry } from "@/lib/validation/match";
+import type { ScoredTeamEntry, TeamEntry } from "@/lib/validation/match";
 
-export type { TeamEntry };
+export type { ScoredTeamEntry, TeamEntry };
 
 /** Datos públicos de una organización (organizations/{id}). */
 export type Organization = {
@@ -25,18 +25,17 @@ export type Player = {
   linkedUid: string | null;
 };
 
-/** Datos que solo ven los miembros de la organización (players/{playerId}/private/data). */
+/** Datos que solo ven los miembros de la organización (playersPrivate/{playerId}). */
 export type PlayerPrivate = {
   name: string;
   birthDate: string | null;
 };
 
-/** Un partido (organizations/{id}/matches/{matchId}). */
-export type Match = {
-  id: string;
-  date: string;
-  place: string;
-  status: "pending" | "finished";
-  teamA: TeamEntry[];
-  teamB: TeamEntry[];
-};
+/**
+ * Un partido (organizations/{id}/matches/{matchId}). Al finalizarse, cada lugar
+ * de los equipos guarda sus goles y queda el marcador.
+ */
+export type Match = { id: string; date: string; place: string } & (
+  | { status: "pending"; teamA: TeamEntry[]; teamB: TeamEntry[] }
+  | { status: "finished"; teamA: ScoredTeamEntry[]; teamB: ScoredTeamEntry[]; scoreA: number; scoreB: number }
+);

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { collection, limit, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import { formatDate } from "@/lib/format";
+import { matchFromSnapshot } from "@/lib/queries/matches";
 import type { Match } from "@/lib/types";
 
 // Los 10 más recientes. La paginación y el detalle del listado llegan en el paso 12.
@@ -20,7 +21,7 @@ export function MatchesSection({ organizationId, isAdmin }: { organizationId: st
           orderBy("createdAt", "desc"),
           limit(10),
         ),
-        (snap) => setMatches(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Match, "id">) }))),
+        (snap) => setMatches(snap.docs.map(matchFromSnapshot)),
         () => setMatches([]),
       ),
     [organizationId],

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
+import { matchFromSnapshot } from "@/lib/queries/matches";
 import type { Match } from "@/lib/types";
 
 type State = { status: "loading" } | { status: "not-found" } | { status: "error" } | { status: "ready"; match: Match };
@@ -18,7 +19,7 @@ export function useMatch(organizationId: string, matchId: string): State {
         (snap) =>
           setState(
             snap.exists()
-              ? { status: "ready", match: { id: snap.id, ...(snap.data() as Omit<Match, "id">) } }
+              ? { status: "ready", match: matchFromSnapshot(snap) }
               : { status: "not-found" },
           ),
         () => setState({ status: "error" }),

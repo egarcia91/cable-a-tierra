@@ -1,9 +1,14 @@
 "use server";
 
 import type { ActionResult } from "@/lib/action-result";
-import { matchInputSchema, type MatchInput } from "@/lib/validation/match";
+import {
+  finishMatchInputSchema,
+  matchInputSchema,
+  type FinishMatchInput,
+  type MatchInput,
+} from "@/lib/validation/match";
 import { requireUser } from "@/server/auth";
-import { createMatch, updatePendingMatch } from "@/server/matches";
+import { createMatch, finishMatch, updatePendingMatch } from "@/server/matches";
 import { runAction } from "@/server/run-action";
 import { validate } from "@/server/validate";
 
@@ -28,5 +33,17 @@ export async function updatePendingMatchAction(
   return runAction("updatePendingMatch", async () => {
     const user = await requireUser(idToken);
     await updatePendingMatch(user, organizationId, matchId, validate(matchInputSchema, input));
+  });
+}
+
+export async function finishMatchAction(
+  idToken: string | undefined,
+  organizationId: string,
+  matchId: string,
+  input: FinishMatchInput,
+): Promise<ActionResult> {
+  return runAction("finishMatch", async () => {
+    const user = await requireUser(idToken);
+    await finishMatch(user, organizationId, matchId, validate(finishMatchInputSchema, input));
   });
 }

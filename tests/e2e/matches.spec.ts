@@ -61,3 +61,44 @@ test("muestra el error del servidor si un equipo queda vacío (AC-54)", async ({
     timeout: 30_000,
   });
 });
+
+test("el admin finaliza un partido y se suman las estadísticas (AC-53, AC-15, AC-23c, AC-01, AC-02, AC-03a)", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await signInWithGoogle(page, "Admin Finaliza");
+  await createOrganizationViaUi(page, `Finaliza ${Date.now()}`);
+  const organizationUrl = page.url();
+  await addPlayerViaUi(page, "Juan Pérez", "Juancho");
+  await addPlayerViaUi(page, "Alberto Díaz", "Beto");
+
+  // El día arranca en hoy, así que se puede finalizar enseguida.
+  await page.getByRole("link", { name: "Dar de alta un partido" }).click();
+  await page.getByLabel("Lugar").fill("Cancha 1");
+  await page.getByLabel("Juancho").selectOption("A");
+  await page.getByLabel("Beto").selectOption("B");
+  await page.getByLabel("Apodo del externo/a para el equipo A").fill("Tano");
+  await page.getByRole("button", { name: "Agregar al equipo A" }).click();
+  await page.getByRole("button", { name: "Dar de alta el partido" }).click();
+  await page.getByRole("link", { name: "Finalizar partido" }).click({ timeout: 30_000 });
+
+  await page.getByLabel("Goles de Juancho", { exact: true }).fill("2");
+  await page.getByLabel("Goles de Tano (externo/a)", { exact: true }).fill("1");
+  await page.getByLabel("Goles en contra de Juancho").fill("1");
+  await expect(page.getByLabel("Marcador")).toHaveText("Equipo A 3 – 1 Equipo B");
+  await page.getByRole("button", { name: "Finalizar partido" }).click();
+
+  await expect(page.getByText("Cancha 1 · Finalizado")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByLabel("Marcador")).toHaveText("Equipo A 3 – 1 Equipo B");
+  await expect(page.getByText("Juancho · 2 goles, 1 en contra")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Finalizar partido" })).toHaveCount(0);
+
+  // PJ, G, V, E, D: Juancho ganó con 2 goles; el gol en contra no le cuenta a Beto.
+  await page.goto(organizationUrl);
+  const cells = (nickname: string) =>
+    page.locator("table.players tbody tr", { hasText: nickname }).locator("td");
+  await expect(cells("Juancho")).toHaveText(["1", "2", "1", "0", "0"]);
+  await expect(cells("Beto")).toHaveText(["1", "0", "0", "0", "1"]);
+  // El externo/a no queda como jugador/a de la organización (AC-23b).
+  await expect(page.locator("table.players tbody tr")).toHaveCount(2);
+});

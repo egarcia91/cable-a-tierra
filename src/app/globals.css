@@ -181,3 +181,31 @@ button:disabled {
   padding: 0.5rem 0;
   border-bottom: 1px solid #ddd;
 }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.score {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.goals-row {
+  display: grid;
+  grid-template-columns: 1fr 4.5rem 4.5rem;
+  align-items: end;
+  gap: 0.5rem;
+}
+
+/* Más específico que ".form label": etiqueta chica arriba del número. */
+.form .goals-row label {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.goals-row input {
+  width: 100%;
+}
