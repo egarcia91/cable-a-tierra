@@ -1,10 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createMatchAction, finishMatchAction, updatePendingMatchAction } from "@/app/actions/matches";
+import {
+  correctMatchAction,
+  createMatchAction,
+  finishMatchAction,
+  updatePendingMatchAction,
+} from "@/app/actions/matches";
 import { createOrganizationAction } from "@/app/actions/organizations";
 import { createPlayerAction } from "@/app/actions/players";
 import { todayInArgentina } from "@/lib/dates";
 import { adminDb } from "@/lib/firebase/admin";
-import type { FinishMatchInput, MatchInput } from "@/lib/validation/match";
+import type { CorrectMatchInput, FinishMatchInput, MatchInput } from "@/lib/validation/match";
 import { clearAuth, clearFirestore } from "../helpers/emulators";
 import { googleIdToken } from "../helpers/id-tokens";
 
@@ -24,6 +29,16 @@ const player = (playerId: string) => ({ type: "player", playerId }) as const;
 const external = (nickname: string) => ({ type: "external", nickname }) as const;
 const matchDoc = async (id: string) => (await adminDb.doc(`organizations/${organizationId}/matches/${id}`).get()).data();
 const matchCount = async () => (await adminDb.collection(`organizations/${organizationId}/matches`).get()).size;
+
+const scoredPlayer = (playerId: string, goals = 0, ownGoals = 0) => ({ ...player(playerId), goals, ownGoals });
+const scoredExternal = (nickname: string, goals = 0, ownGoals = 0) => ({ ...external(nickname), goals, ownGoals });
+const stats = async (playerId: string) => {
+  const snap = await adminDb.doc(`organizations/${organizationId}/players/${playerId}`).get();
+  const { matches, goals, wins, draws, losses } = snap.data()!;
+  return { matches, goals, wins, draws, losses };
+};
+const setStats = (playerId: string, values: Record<string, number>) =>
+  adminDb.doc(`organizations/${organizationId}/players/${playerId}`).update(values);
 
 function baseMatch(): MatchInput {
   return { date: "2026-03-17", place: "Cancha 1", teamA: [player(juancho)], teamB: [player(beto)] };
@@ -185,15 +200,6 @@ describe("finalizar un partido", () => {
   let matchId: string;
   let pepe: string;
 
-  const scoredPlayer = (playerId: string, goals = 0, ownGoals = 0) => ({ ...player(playerId), goals, ownGoals });
-  const scoredExternal = (nickname: string, goals = 0, ownGoals = 0) => ({ ...external(nickname), goals, ownGoals });
-  const stats = async (playerId: string) => {
-    const snap = await adminDb.doc(`organizations/${organizationId}/players/${playerId}`).get();
-    const { matches, goals, wins, draws, losses } = snap.data()!;
-    return { matches, goals, wins, draws, losses };
-  };
-  const setStats = (playerId: string, values: Record<string, number>) =>
-    adminDb.doc(`organizations/${organizationId}/players/${playerId}`).update(values);
   const finish = (input: FinishMatchInput, token = adminToken, id = matchId) =>
     finishMatchAction(token, organizationId, id, input);
   const reschedule = (date: string) => adminDb.doc(`organizations/${organizationId}/matches/${matchId}`).update({ date });
@@ -331,5 +337,130 @@ describe("finalizar un partido", () => {
 
   it("rechaza finalizar un partido que no existe", async () => {
     expect(await finish(lineup(), adminToken, "no-existe")).toEqual({ ok: false, error: "El partido no existe." });
+  });
+});
+
+describe("corregir un partido finalizado", () => {
+  let matchId: string;
+  let pepe: string;
+
+  // Finalizado 2 a 1: Juancho (A) hizo los 2 goles; Beto (B) hizo 1 y Pepe (B) ninguno.
+  const finished = (): CorrectMatchInput => ({
+    date: "2026-03-17",
+    place: "Cancha 1",
+    teamA: [scoredPlayer(juancho, 2)],
+    teamB: [scoredPlayer(beto, 1), scoredPlayer(pepe)],
+  });
+  const correct = (input: CorrectMatchInput, token = adminToken) =>
+    correctMatchAction(token, organizationId, matchId, input);
+
+  beforeEach(async () => {
+    pepe = (await unwrap(createPlayerAction(adminToken, organizationId, { name: "José Gómez", nickname: "Pepe" }))).id;
+    const lineup = { ...baseMatch(), teamB: [player(beto), player(pepe)] };
+    matchId = (await unwrap(createMatchAction(adminToken, organizationId, lineup))).id;
+    const { teamA, teamB } = finished();
+    await unwrap(finishMatchAction(adminToken, organizationId, matchId, { teamA, teamB }));
+  });
+
+  it("corrige los goles y recalcula marcador y estadísticas (AC-51a)", async () => {
+    // Juancho quedó con 6 goles y 1 victoria en total.
+    await setStats(juancho, { goals: 6 });
+
+    await unwrap(correct({ ...finished(), teamA: [scoredPlayer(juancho, 1)] }));
+
+    expect(await matchDoc(matchId)).toMatchObject({ scoreA: 1, scoreB: 1 });
+    expect(await stats(juancho)).toEqual({ matches: 1, goals: 5, wins: 0, draws: 1, losses: 0 });
+    expect(await stats(beto)).toEqual({ matches: 1, goals: 1, wins: 0, draws: 1, losses: 0 });
+  });
+
+  it("quitar a un jugador/a le resta el partido y la victoria (AC-51b)", async () => {
+    // Pepe, del equipo ganador sin goles propios, tenía 8 partidos y 3 victorias.
+    const pepeWins = { ...finished(), teamA: [scoredPlayer(juancho, 2), scoredPlayer(pepe)], teamB: [scoredPlayer(beto, 1)] };
+    await unwrap(correct(pepeWins));
+    await setStats(pepe, { matches: 8, wins: 3, losses: 0 });
+
+    await unwrap(correct({ ...pepeWins, teamA: [scoredPlayer(juancho, 2)] }));
+
+    expect(await stats(pepe)).toMatchObject({ matches: 7, wins: 2, losses: 0 });
+  });
+
+  it("corrige el lugar (AC-51c)", async () => {
+    await unwrap(correct({ ...finished(), place: "Cancha 2" }));
+
+    expect((await matchDoc(matchId))?.place).toBe("Cancha 2");
+  });
+
+  it("corrige el día", async () => {
+    await unwrap(correct({ ...finished(), date: "2026-03-10" }));
+
+    expect((await matchDoc(matchId))?.date).toBe("2026-03-10");
+    expect((await stats(juancho)).matches).toBe(1);
+  });
+
+  it("rechaza goles negativos y deja todo sin cambios (AC-51d)", async () => {
+    const before = await matchDoc(matchId);
+
+    const result = await correct({ ...finished(), teamA: [scoredPlayer(juancho, -1)] });
+
+    expect(result).toEqual({ ok: false, error: "Los goles tienen que ser números enteros mayores o iguales a 0." });
+    expect(await matchDoc(matchId)).toEqual(before);
+    expect(await stats(juancho)).toEqual({ matches: 1, goals: 2, wins: 1, draws: 0, losses: 0 });
+  });
+
+  it("agregar un externo/a con 1 gol suma al marcador pero no le registra estadísticas (AC-92)", async () => {
+    // Primero queda 1 a 1.
+    await unwrap(correct({ ...finished(), teamA: [scoredPlayer(juancho, 1)] }));
+
+    await unwrap(correct({ ...finished(), teamA: [scoredPlayer(juancho, 1), scoredExternal("Tano", 1)] }));
+
+    expect(await matchDoc(matchId)).toMatchObject({ scoreA: 2, scoreB: 1 });
+    expect(await stats(juancho)).toEqual({ matches: 1, goals: 1, wins: 1, draws: 0, losses: 0 });
+    const players = await adminDb.collection(`organizations/${organizationId}/players`).get();
+    expect(players.size).toBe(3);
+  });
+
+  it("sumar a un jugador/a que no estaba le suma el partido", async () => {
+    const lucho = (await unwrap(createPlayerAction(adminToken, organizationId, { name: "Luis Paz", nickname: "Lucho" }))).id;
+
+    await unwrap(correct({ ...finished(), teamB: [...finished().teamB, scoredPlayer(lucho)] }));
+
+    expect(await stats(lucho)).toEqual({ matches: 1, goals: 0, wins: 0, draws: 0, losses: 1 });
+  });
+
+  it("no cuenta de nuevo el partido en la organización", async () => {
+    await unwrap(correct({ ...finished(), place: "Cancha 2" }));
+
+    expect((await adminDb.doc(`organizations/${organizationId}`).get()).get("finishedMatchCount")).toBe(1);
+  });
+
+  it("aplica las validaciones del alta: equipo vacío, lugar y repetidos (RF-06k)", async () => {
+    expect((await correct({ ...finished(), teamB: [] })).ok).toBe(false);
+    expect(await correct({ ...finished(), place: " " })).toEqual({ ok: false, error: "El partido tiene que tener un lugar." });
+    expect((await correct({ ...finished(), teamB: [scoredPlayer(juancho)] })).ok).toBe(false);
+    const longNickname = scoredExternal("a".repeat(41));
+    expect((await correct({ ...finished(), teamA: [scoredPlayer(juancho), longNickname] })).ok).toBe(false);
+    expect((await correct({ ...finished(), teamB: [scoredPlayer("de-otra-org")] })).ok).toBe(false);
+    expect(await stats(juancho)).toEqual({ matches: 1, goals: 2, wins: 1, draws: 0, losses: 0 });
+  });
+
+  it("rechaza pasarlo a un día que todavía no llegó (RF-08h)", async () => {
+    const result = await correct({ ...finished(), date: "2099-01-01" });
+
+    expect(result).toEqual({ ok: false, error: "Un partido finalizado no puede ser de un día que todavía no llegó." });
+  });
+
+  it("un usuario que no es admin no puede corregirlo (AC-05e)", async () => {
+    const result = await correct({ ...finished(), teamA: [scoredPlayer(juancho, 9)] }, otherToken);
+
+    expect(result).toEqual({ ok: false, error: "Solo el administrador/a de la organización puede hacer esto." });
+    expect((await stats(juancho)).goals).toBe(2);
+  });
+
+  it("no corrige un partido pendiente", async () => {
+    const pending = (await unwrap(createMatchAction(adminToken, organizationId, baseMatch()))).id;
+
+    const result = await correctMatchAction(adminToken, organizationId, pending, finished());
+
+    expect(result).toEqual({ ok: false, error: "El partido todavía no está finalizado." });
   });
 });

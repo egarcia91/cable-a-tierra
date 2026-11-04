@@ -102,3 +102,57 @@ test("el admin finaliza un partido y se suman las estadísticas (AC-53, AC-15, A
   // El externo/a no queda como jugador/a de la organización (AC-23b).
   await expect(page.locator("table.players tbody tr")).toHaveCount(2);
 });
+
+test("el admin corrige un partido finalizado y se recalculan las estadísticas (AC-51a, AC-51c, AC-92)", async ({
+  page,
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  await signInWithGoogle(page, "Admin Corrige");
+  await createOrganizationViaUi(page, `Corrige ${Date.now()}`);
+  const organizationUrl = page.url();
+  await addPlayerViaUi(page, "Juan Pérez", "Juancho");
+  await addPlayerViaUi(page, "Alberto Díaz", "Beto");
+
+  await page.getByRole("link", { name: "Dar de alta un partido" }).click();
+  await page.getByLabel("Lugar").fill("Cancha 1");
+  await page.getByLabel("Juancho").selectOption("A");
+  await page.getByLabel("Beto").selectOption("B");
+  await page.getByRole("button", { name: "Dar de alta el partido" }).click();
+  await page.getByRole("link", { name: "Finalizar partido" }).click({ timeout: 30_000 });
+  await page.getByLabel("Goles de Juancho", { exact: true }).fill("2");
+  await page.getByLabel("Goles de Beto", { exact: true }).fill("1");
+  await page.getByRole("button", { name: "Finalizar partido" }).click();
+  // El formulario también muestra el marcador: se espera a volver a la página del partido.
+  await expect(page.getByText("Cancha 1 · Finalizado")).toBeVisible({ timeout: 30_000 });
+  const matchUrl = page.url();
+
+  // Juancho pasa a 1 gol (1 a 1), se corrige el lugar y se suma a Tano con 1 gol (2 a 1).
+  await page.getByRole("link", { name: "Corregir partido" }).click();
+  await expect(page.getByLabel("Goles de Juancho", { exact: true })).toHaveValue("2");
+  await page.getByLabel("Lugar").fill("Cancha 2");
+  await page.getByLabel("Goles de Juancho", { exact: true }).fill("1");
+  await expect(page.getByLabel("Marcador")).toHaveText("Equipo A 1 – 1 Equipo B");
+  await page.getByLabel("Apodo del externo/a para el equipo A").fill("Tano");
+  await page.getByRole("button", { name: "Agregar al equipo A" }).click();
+  await page.getByLabel("Goles de Tano (externo/a)", { exact: true }).fill("1");
+  await expect(page.getByLabel("Marcador")).toHaveText("Equipo A 2 – 1 Equipo B");
+  await page.getByRole("button", { name: "Guardar corrección" }).click();
+
+  await expect(page.getByText("Cancha 2 · Finalizado")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Tano (externo/a) · 1 gol")).toBeVisible();
+
+  await page.goto(organizationUrl);
+  const cells = (nickname: string) =>
+    page.locator("table.players tbody tr", { hasText: nickname }).locator("td");
+  await expect(cells("Juancho")).toHaveText(["1", "1", "1", "0", "0"]);
+  await expect(cells("Beto")).toHaveText(["1", "1", "0", "0", "1"]);
+  await expect(page.locator("table.players tbody tr")).toHaveCount(2);
+
+  // Un invitado ve el partido corregido pero no puede corregirlo.
+  const guest = await browser.newPage();
+  await guest.goto(matchUrl);
+  await expect(guest.getByText("Cancha 2 · Finalizado")).toBeVisible();
+  await expect(guest.getByRole("link", { name: "Corregir partido" })).toHaveCount(0);
+  await guest.close();
+});

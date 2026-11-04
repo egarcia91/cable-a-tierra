@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { finishMatchInputSchema, matchInputSchema } from "./match";
+import { correctMatchInputSchema, finishMatchInputSchema, matchInputSchema } from "./match";
 import { firstError } from "./text";
 
 const juancho = { type: "player", playerId: "juancho" } as const;
@@ -84,5 +84,33 @@ describe("finishMatchInputSchema", () => {
   it("rechaza goles en contra inválidos o que no son números", () => {
     expect(firstError(parseFinish(scored(0, -1)))).toBe(GOALS_ERROR);
     expect(firstError(parseFinish(scored("2")))).toBe(GOALS_ERROR);
+  });
+});
+
+describe("correctMatchInputSchema", () => {
+  const scored = (entry: object, goals = 0) => ({ ...entry, goals, ownGoals: 0 });
+  const corrected = { ...valid, teamA: [scored(juancho, 2)], teamB: [scored(beto, 1)] };
+  const parseCorrection = (input: unknown) => correctMatchInputSchema.safeParse(input);
+
+  it("acepta día, lugar, equipos y goles", () => {
+    expect(parseCorrection(corrected).success).toBe(true);
+  });
+
+  it("aplica las validaciones del alta (RF-06k)", () => {
+    expect(firstError(parseCorrection({ ...corrected, teamB: [] }))).toBe("El equipo B tiene que tener al menos 1 jugador/a.");
+    expect(firstError(parseCorrection({ ...corrected, place: "  " }))).toBe("El partido tiene que tener un lugar.");
+    expect(firstError(parseCorrection({ ...corrected, teamB: [scored(juancho)] }))).toBe(
+      "Un jugador/a no puede estar dos veces en el partido.",
+    );
+  });
+
+  it("rechaza goles inválidos (AC-51d)", () => {
+    expect(firstError(parseCorrection({ ...corrected, teamA: [scored(juancho, -1)] }))).toBe(
+      "Los goles tienen que ser números enteros mayores o iguales a 0.",
+    );
+  });
+
+  it("exige los goles de cada uno", () => {
+    expect(parseCorrection({ ...corrected, teamA: [juancho] }).success).toBe(false);
   });
 });

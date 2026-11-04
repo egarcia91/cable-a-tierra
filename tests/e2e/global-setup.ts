@@ -22,6 +22,7 @@ const ROUTES = [
   "/organizaciones/calentar/partidos/calentar",
   "/organizaciones/calentar/partidos/calentar/editar",
   "/organizaciones/calentar/partidos/calentar/finalizar",
+  "/organizaciones/calentar/partidos/calentar/corregir",
 ];
 
 async function warmUp() {

@@ -2,13 +2,15 @@
 
 import type { ActionResult } from "@/lib/action-result";
 import {
+  correctMatchInputSchema,
   finishMatchInputSchema,
   matchInputSchema,
+  type CorrectMatchInput,
   type FinishMatchInput,
   type MatchInput,
 } from "@/lib/validation/match";
 import { requireUser } from "@/server/auth";
-import { createMatch, finishMatch, updatePendingMatch } from "@/server/matches";
+import { correctMatch, createMatch, finishMatch, updatePendingMatch } from "@/server/matches";
 import { runAction } from "@/server/run-action";
 import { validate } from "@/server/validate";
 
@@ -45,5 +47,17 @@ export async function finishMatchAction(
   return runAction("finishMatch", async () => {
     const user = await requireUser(idToken);
     await finishMatch(user, organizationId, matchId, validate(finishMatchInputSchema, input));
+  });
+}
+
+export async function correctMatchAction(
+  idToken: string | undefined,
+  organizationId: string,
+  matchId: string,
+  input: CorrectMatchInput,
+): Promise<ActionResult> {
+  return runAction("correctMatch", async () => {
+    const user = await requireUser(idToken);
+    await correctMatch(user, organizationId, matchId, validate(correctMatchInputSchema, input));
   });
 }

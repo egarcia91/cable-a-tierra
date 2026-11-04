@@ -46,6 +46,12 @@ export default function MatchPage() {
           Equipo A {m.scoreA} – {m.scoreB} Equipo B
         </p>
       )}
+      {isAdmin && m.status === "finished" && (
+        <p>
+          {/* Sin límite de tiempo: recalcula las estadísticas (RF-06g a RF-06j). */}
+          <Link href={`/organizaciones/${id}/partidos/${matchId}/corregir`}>Corregir partido</Link>
+        </p>
+      )}
       {isAdmin && m.status === "pending" && (
         <p className="actions">
           <Link href={`/organizaciones/${id}/partidos/${matchId}/editar`}>Editar partido</Link>
