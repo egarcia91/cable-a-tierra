@@ -1,6 +1,6 @@
 import "server-only";
 import type { DecodedIdToken } from "firebase-admin/auth";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, type DocumentSnapshot, type Transaction } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/admin";
 import { sortKey } from "@/lib/sort-key";
 import type { ValidOrganization } from "@/lib/validation/organization";
@@ -28,19 +28,31 @@ export async function createOrganization(user: DecodedIdToken, input: ValidOrgan
   return ref.id;
 }
 
+/**
+ * Lee la organización dentro de una transacción y verifica que el usuario sea su
+ * administrador/a (RF-06c, RF-06d, RF-06f). Si no, tira un UserError.
+ */
+export async function getOrganizationAsAdmin(
+  tx: Transaction,
+  organizationId: string,
+  uid: string,
+): Promise<DocumentSnapshot> {
+  const snap = await tx.get(organizations.doc(organizationId));
+  if (!snap.exists) throw new UserError("La organización no existe.");
+  if (snap.get("adminUid") !== uid) {
+    throw new UserError("Solo el administrador/a de la organización puede hacer esto.");
+  }
+  return snap;
+}
+
 /** Edita nombre y descripción; solo lo puede hacer su administrador/a (RF-06e, RF-06f). */
 export async function updateOrganization(
   user: DecodedIdToken,
   organizationId: string,
   input: ValidOrganization,
 ): Promise<void> {
-  const ref = organizations.doc(organizationId);
   await adminDb.runTransaction(async (tx) => {
-    const snap = await tx.get(ref);
-    if (!snap.exists) throw new UserError("La organización no existe.");
-    if (snap.get("adminUid") !== user.uid) {
-      throw new UserError("Solo el administrador/a puede editar esta organización.");
-    }
+    const { ref } = await getOrganizationAsAdmin(tx, organizationId, user.uid);
     tx.update(ref, {
       name: input.name,
       nameSort: sortKey(input.name),

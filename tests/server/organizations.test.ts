@@ -109,7 +109,7 @@ describe("editar organización", () => {
 
     const result = await updateOrganizationAction(otherToken, id, { name: "Hackeada" });
 
-    expect(result).toEqual({ ok: false, error: "Solo el administrador/a puede editar esta organización." });
+    expect(result).toEqual({ ok: false, error: "Solo el administrador/a de la organización puede hacer esto." });
     expect((await organization(id))?.name).toBe("Los Martes");
   });
 

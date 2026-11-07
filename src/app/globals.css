@@ -93,3 +93,49 @@ button:disabled {
   color: #555;
   white-space: nowrap;
 }
+
+.sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.sort select {
+  padding: 0.4rem;
+  font: inherit;
+}
+
+.players {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.players th,
+.players td {
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.players tbody th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.players .personal {
+  display: block;
+  font-weight: 400;
+  color: #555;
+}
+
+.players tbody th a {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.players .active {
+  background: #eef6f0;
+  font-weight: 700;
+}
